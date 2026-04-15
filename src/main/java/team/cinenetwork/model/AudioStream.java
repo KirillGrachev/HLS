@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import org.jetbrains.annotations.NotNull;
+import team.cinenetwork.ffmpeg.exceptions.validation.MissingRequiredFieldException;
+import team.cinenetwork.ffmpeg.exceptions.audio.InvalidSamplingRateException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +59,7 @@ public class AudioStream {
                     try {
                         return Integer.parseInt(rate);
                     } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("Invalid sampling rate format: " + rate, e);
+                        throw new InvalidSamplingRateException("Invalid sampling rate format: " + rate, e);
                     }
                 })
                 .orElse(null);
@@ -78,7 +80,7 @@ public class AudioStream {
         return Optional.ofNullable(data.get(key))
                 .map(Number.class::cast)
                 .map(Number::intValue)
-                .orElseThrow(() -> new IllegalArgumentException("Missing required field: " + key));
+                .orElseThrow(() -> new MissingRequiredFieldException("Missing required field: " + key));
     }
 
     private @NotNull String extractLanguage(@NotNull Map<String, Object> data) {

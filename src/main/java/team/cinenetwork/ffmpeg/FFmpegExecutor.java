@@ -16,18 +16,18 @@ import java.util.List;
 public class FFmpegExecutor {
 
     private final AppOptions options;
-    private final FFmpegCommandCoordinator fFmpegCommandCoordinator;
+    private final FFmpegCommandCoordinator ffmpegCommandCoordinator;
 
     public FFmpegExecutor(@NotNull AppOptions options,
                           VideoInfo videoInfo) {
         this.options = options;
-        this.fFmpegCommandCoordinator = new FFmpegCommandCoordinator(options,
+        this.ffmpegCommandCoordinator = new FFmpegCommandCoordinator(options,
                 videoInfo);
     }
 
     public String probeMediaInfo() throws IOException {
 
-        List<String> command = fFmpegCommandCoordinator.buildProbeCommand();
+        List<String> command = ffmpegCommandCoordinator.buildProbeCommand();
         log.debug("Executing media probe command: {}",
                 String.join(" ", command));
 
@@ -40,8 +40,8 @@ public class FFmpegExecutor {
             throws IOException {
 
         List<List<String>> commands = switch (type) {
-            case POSTER -> fFmpegCommandCoordinator.buildPosterCommands();
-            case TRANSCODE -> fFmpegCommandCoordinator.buildTranscodeCommands();
+            case POSTER -> ffmpegCommandCoordinator.buildPosterCommands();
+            case TRANSCODE -> ffmpegCommandCoordinator.buildTranscodeCommands();
         };
 
         for (List<String> command : commands) {

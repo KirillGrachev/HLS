@@ -3,6 +3,7 @@ package team.cinenetwork.ffmpeg.builder;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import team.cinenetwork.ffmpeg.builder.impl.AbstractFFmpegStrategy;
+import team.cinenetwork.ffmpeg.exceptions.resolution.ZeroWidthException;
 import team.cinenetwork.model.VideoStream;
 import team.cinenetwork.options.AppOptions;
 import team.cinenetwork.model.VideoInfo;
@@ -139,7 +140,7 @@ public class HlsVideoStrategy extends AbstractFFmpegStrategy {
 
         int width = options.getVideoWidths().get(variantIndex);
 
-        if (width == 0) throw new IllegalArgumentException(
+        if (width == 0) throw new ZeroWidthException(
                 "Zero width variant"
         );
 

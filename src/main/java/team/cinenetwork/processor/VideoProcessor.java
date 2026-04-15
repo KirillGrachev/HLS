@@ -68,6 +68,7 @@ public class VideoProcessor {
     }
 
     private void validateMediaStreams(@NotNull VideoInfo videoInfo) {
+
         if (videoInfo.getVideoStream() == null) {
             throw new IllegalStateException("Source contains no video stream");
         }
