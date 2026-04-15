@@ -3,7 +3,8 @@ package team.cinenetwork.ffmpeg.builder;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import team.cinenetwork.ffmpeg.builder.impl.AbstractFFmpegStrategy;
-import team.cinenetwork.ffmpeg.exceptions.audio.AudioStreamNotFoundException;
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
+import team.cinenetwork.ffmpeg.exceptions.Exception;
 import team.cinenetwork.model.AudioStream;
 import team.cinenetwork.options.AppOptions;
 import team.cinenetwork.model.VideoInfo;
@@ -23,7 +24,7 @@ public class AudioOnlyStrategy extends AbstractFFmpegStrategy {
     public @NotNull List<String> build() {
 
         AudioStream audio = videoInfo.findAudioStream(options.getAudioStream())
-                .orElseThrow(() -> new AudioStreamNotFoundException(
+                .orElseThrow(() -> Exception.of(ErrorCode.AUDIO_STREAM_NOT_FOUND,
                         "Audio stream " + options.getAudioStream() + " not found"));
 
         ensureDirectory(options.getOutput());

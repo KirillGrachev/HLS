@@ -1,5 +1,6 @@
 package team.cinenetwork.processor;
 
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
 import team.cinenetwork.processor.impl.meta.MetadataParser;
 import team.cinenetwork.utils.FileUtil;
 
@@ -74,7 +75,8 @@ public class VideoProcessor {
         }
 
         if (options.isAudioOnly() && videoInfo.getAudioStream() == null) {
-            throw new IllegalStateException("Audio-only mode requires audio stream");
+            throw team.cinenetwork.ffmpeg.exceptions.Exception.of(ErrorCode.AUDIO_ONLY,
+                    "Audio-only mode requires audio stream");
         }
     }
 

@@ -2,8 +2,8 @@ package team.cinenetwork.processor.impl.playlist;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import team.cinenetwork.ffmpeg.exceptions.validation.InvalidAspectRatioException;
-import team.cinenetwork.ffmpeg.exceptions.video.FrameRateNotFoundException;
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
+import team.cinenetwork.ffmpeg.exceptions.Exception;
 import team.cinenetwork.model.VideoInfo;
 import team.cinenetwork.options.AppOptions;
 
@@ -81,14 +81,16 @@ public class MasterPlaylistBuilder {
     private double getFrameRate() {
         return videoInfo.getVideoStream()
                 .getCalculatedFrameRate()
-                .orElseThrow(() -> new FrameRateNotFoundException("Frame rate not found"));
+                .orElseThrow(() -> Exception.of(ErrorCode.FRAME_RATE_NOT_FOUND,
+                        "Frame rate not found"));
     }
 
     private double parseAspectRatio(@NotNull String ratio) {
 
         String[] parts = ratio.split(":");
         if (parts.length != 2) {
-            throw new InvalidAspectRatioException("Invalid aspect ratio: " + ratio);
+            throw Exception.of(ErrorCode.INVALID_ASPECT_RATIO,
+                    "Invalid aspect ratio: " + ratio);
         }
 
         return Double.parseDouble(parts[0]) / Double.parseDouble(parts[1]);

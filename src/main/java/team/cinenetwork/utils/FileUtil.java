@@ -13,7 +13,8 @@ import java.nio.file.Path;
 @UtilityClass
 public class FileUtil {
 
-    public void prepareOutputDirectory(Path directoryPath, boolean overwriteExisting)
+    public void prepareOutputDirectory(Path directoryPath,
+                                       boolean overwriteExisting)
             throws IOException {
 
         validatePathNotNull(directoryPath);
@@ -25,7 +26,8 @@ public class FileUtil {
         }
     }
 
-    public void deleteFilesByPattern(Path targetDirectory, String filenamePattern)
+    public void deleteFilesByPattern(Path targetDirectory,
+                                     String filenamePattern)
             throws IOException {
 
         validatePathNotNull(targetDirectory);

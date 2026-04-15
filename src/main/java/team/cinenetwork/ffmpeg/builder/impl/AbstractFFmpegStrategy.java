@@ -3,6 +3,8 @@ package team.cinenetwork.ffmpeg.builder.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
+import team.cinenetwork.ffmpeg.exceptions.Exception;
 import team.cinenetwork.model.AudioStream;
 import team.cinenetwork.model.VideoInfo;
 import team.cinenetwork.options.AppOptions;
@@ -98,7 +100,8 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
 
         AudioStream audio = audioStreamOverride
                 .or(() -> Optional.ofNullable(videoInfo.getAudioStream()))
-                .orElseThrow(() -> new IllegalStateException("No audio stream available"));
+                .orElseThrow(() -> Exception.of(ErrorCode.AUDIO_STREAM_NOT_FOUND,
+                        "No audio stream available"));
 
         return List.of(
                 "-map", options.getAudioStream(),

@@ -3,7 +3,8 @@ package team.cinenetwork.ffmpeg.builder;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import team.cinenetwork.ffmpeg.builder.impl.AbstractFFmpegStrategy;
-import team.cinenetwork.ffmpeg.exceptions.resolution.ZeroWidthException;
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
+import team.cinenetwork.ffmpeg.exceptions.Exception;
 import team.cinenetwork.model.VideoStream;
 import team.cinenetwork.options.AppOptions;
 import team.cinenetwork.model.VideoInfo;
@@ -34,7 +35,7 @@ public class PosterStrategy extends AbstractFFmpegStrategy {
         int targetWidth = options.getVideoWidths().get(variantIndex);
 
         if (targetWidth == 0) {
-            throw new ZeroWidthException(
+            throw Exception.of(ErrorCode.ZERO_WIDTH,
                     "Cannot generate poster for zero-width variant"
             );
         }

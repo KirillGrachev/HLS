@@ -3,7 +3,7 @@ package team.cinenetwork.processor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jetbrains.annotations.NotNull;
-import team.cinenetwork.ffmpeg.exceptions.validation.NoMatchingBitrateException;
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
 import team.cinenetwork.model.VideoInfo;
 import team.cinenetwork.model.VideoStream;
 import team.cinenetwork.options.AppOptions;
@@ -64,7 +64,8 @@ public class OptionsNormalizer {
 
         int baseIndex = options.getVideoWidths().indexOf(targetWidth);
         if (baseIndex == -1 || baseIndex >= options.getVideoBaseBitrates().size()) {
-            throw new NoMatchingBitrateException("No matching bitrate for width " + targetWidth);
+            throw team.cinenetwork.ffmpeg.exceptions.Exception.of(ErrorCode.NO_MATCHING_BITRATE,
+                    "No matching bitrate for width " + targetWidth);
         }
 
         return (int) (options.getVideoBaseBitrates().get(baseIndex)
