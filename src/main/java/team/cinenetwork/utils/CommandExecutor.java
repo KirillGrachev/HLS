@@ -4,8 +4,9 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
+import team.cinenetwork.ffmpeg.exceptions.Exception;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @UtilityClass
@@ -41,7 +43,8 @@ public class CommandExecutor {
         } catch (InterruptedException e) {
 
             handleThreadInterruption();
-            throw new IOException("Command execution interrupted", e);
+            throw Exception.of(ErrorCode.EXECUTION_INTERRUPTED,
+                    "Command execution interrupted", e);
 
         }
     }
@@ -68,7 +71,8 @@ public class CommandExecutor {
         } catch (InterruptedException e) {
 
             handleThreadInterruption();
-            throw new IOException("Command streaming interrupted", e);
+            throw Exception.of(ErrorCode.EXECUTION_INTERRUPTED,
+                    "Command streaming interrupted", e);
 
         }
     }
@@ -87,11 +91,13 @@ public class CommandExecutor {
     private void validateInput(String command, List<String> arguments) {
 
         if (command == null || command.trim().isEmpty()) {
-            throw new IllegalArgumentException("Command must not be null or empty");
+            throw Exception.of(ErrorCode.COMMAND_EXECUTION_FAILED,
+                    "Command must not be null or empty");
         }
 
         if (arguments == null) {
-            throw new IllegalArgumentException("Arguments list must not be null");
+            throw Exception.of(ErrorCode.INVALID_COMMAND_ARGUMENTS,
+                    "Arguments list must not be null");
         }
 
     }
@@ -113,15 +119,17 @@ public class CommandExecutor {
     }
 
     private void validateExitCode(int exitCode, String errorContext)
-            throws IOException {
+            throws Exception {
 
         if (exitCode != 0) {
 
-            throw new IOException(String.format(
-                    "Command failed with exit code %d. Error context: %s",
-                    exitCode,
-                    errorContext
-            ));
+            throw Exception.of(ErrorCode.COMMAND_EXECUTION_FAILED,
+                    String.format("Command failed with exit code %d. Context: %s",
+                            exitCode, errorContext), Map.of(
+                            "exitCode", exitCode,
+                            "context", errorContext
+                    ), null
+            );
 
         }
     }

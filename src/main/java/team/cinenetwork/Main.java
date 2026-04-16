@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
 import team.cinenetwork.ffmpeg.FFmpegExecutor;
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
 import team.cinenetwork.model.VideoInfo;
 import team.cinenetwork.options.AppOptions;
 import team.cinenetwork.processor.*;
@@ -35,7 +36,7 @@ public class Main {
 
             log.info("Video processing completed successfully");
 
-        } catch (VideoProcessor.VideoProcessingException e) {
+        } catch (team.cinenetwork.ffmpeg.exceptions.Exception e) {
 
             log.error("Processing failed: {}", e.getMessage());
             log.debug("Failure details:", e);
@@ -66,7 +67,7 @@ public class Main {
 
     @NotNull
     private static VideoProcessor createVideoProcessor(AppOptions options)
-            throws VideoProcessor.VideoProcessingException {
+            throws team.cinenetwork.ffmpeg.exceptions.Exception {
 
         try {
 
@@ -95,7 +96,8 @@ public class Main {
             );
 
         } catch (Exception e) {
-            throw new VideoProcessor.VideoProcessingException("Processor initialization failed", e);
+            throw team.cinenetwork.ffmpeg.exceptions.Exception.of(ErrorCode.PROCESSOR_INITIALIZATION_FAILED,
+                    "Processor initialization failed", e);
         }
     }
 }

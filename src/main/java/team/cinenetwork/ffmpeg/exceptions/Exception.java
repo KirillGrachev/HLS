@@ -46,6 +46,12 @@ public class Exception extends RuntimeException {
     }
 
     public static @NotNull Exception of(@NotNull ErrorCode code,
+                                        String message,
+                                        @Nullable Throwable cause) {
+        return new Exception(code, message, null, cause);
+    }
+
+    public static @NotNull Exception of(@NotNull ErrorCode code,
                                         @Nullable Map<String, Object> context,
                                         @Nullable Throwable cause) {
         return new Exception(code, code.getDefaultMessage(), context, cause);

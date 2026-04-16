@@ -3,6 +3,8 @@ package team.cinenetwork.utils;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
+import team.cinenetwork.ffmpeg.exceptions.Exception;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -60,7 +62,7 @@ public class FileUtil {
         if (overwrite) {
             log.info("Directory already exists. Overwrite is enabled, reusing: {}", path);
         } else {
-            throw new IOException(String.format(
+            throw Exception.of(ErrorCode.DIRECTORY_EXISTS, String.format(
                     "Directory already exists and overwrite is disabled. Path: %s",
                     path
             ));
@@ -97,13 +99,13 @@ public class FileUtil {
 
     private void validatePathNotNull(Path path) {
         if (path == null) {
-            throw new IllegalArgumentException("Path cannot be null");
+            throw Exception.of(ErrorCode.NULL_PATH_PROVIDED, "Path cannot be null");
         }
     }
 
     private void validateIsDirectory(Path path) {
         if (!Files.isDirectory(path)) {
-            throw new IllegalArgumentException(
+            throw Exception.of(ErrorCode.INVALID_DIRECTORY_PATH,
                     "Specified path is not a directory: " + path
             );
         }

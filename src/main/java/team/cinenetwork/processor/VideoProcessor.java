@@ -36,7 +36,7 @@ public class VideoProcessor {
 
     }
 
-    public void process() throws VideoProcessingException {
+    public void process() throws team.cinenetwork.ffmpeg.exceptions.Exception {
 
         try {
 
@@ -51,7 +51,8 @@ public class VideoProcessor {
             cleanTemporaryFiles();
 
         } catch (Exception e) {
-            throw new VideoProcessingException("Video processing failed", e);
+            throw team.cinenetwork.ffmpeg.exceptions.Exception.of(ErrorCode.VIDEO_PROCESSING_FAILED,
+                    "Video processing failed", e);
         }
     }
 
@@ -71,7 +72,8 @@ public class VideoProcessor {
     private void validateMediaStreams(@NotNull VideoInfo videoInfo) {
 
         if (videoInfo.getVideoStream() == null) {
-            throw new IllegalStateException("Source contains no video stream");
+            throw team.cinenetwork.ffmpeg.exceptions.Exception.of(ErrorCode.NO_VIDEO_STREAM,
+                    "Source contains no video stream");
         }
 
         if (options.isAudioOnly() && videoInfo.getAudioStream() == null) {
@@ -95,11 +97,5 @@ public class VideoProcessor {
                 options.getOutput(),
                 "_*"
         );
-    }
-
-    public static class VideoProcessingException extends Exception {
-        public VideoProcessingException(String message, Throwable cause) {
-            super(message, cause);
-        }
     }
 }

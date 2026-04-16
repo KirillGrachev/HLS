@@ -63,6 +63,7 @@ public class VideoStream {
 
         extractCoreProperties(probeData);
         parseDurationFromProbeData(probeData);
+
     }
 
     public Optional<Double> getCalculatedFrameRate() {
