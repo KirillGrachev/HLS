@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b0b0b8fa-de4d-4637-89f3-22d40affbf08" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/exceptions/ErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/exceptions/ErrorCode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/exceptions/Exception.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/exceptions/Exception.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/model/VideoStream.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/model/VideoStream.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/processor/VideoProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/processor/VideoProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/utils/CommandExecutor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/utils/CommandExecutor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/utils/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/utils/FileUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -19,7 +19,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.7.1</version>
+                <version>3.8.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -42,7 +42,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
+                <version>3.5.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -60,7 +60,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.2</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -69,55 +69,38 @@
                         </goals>
                         <configuration>
                             <relocations>
-
-                                <!-- Commons IO -->
                                 <relocation>
                                     <pattern>org.apache.commons.io</pattern>
                                     <shadedPattern>team.cinenetwork.libs.org.apache.commons.io</shadedPattern>
                                 </relocation>
-
-                                <!-- SLF4J -->
                                 <relocation>
                                     <pattern>org.slf4j</pattern>
                                     <shadedPattern>team.cinenetwork.libs.org.slf4j</shadedPattern>
                                 </relocation>
-
-                                <!-- Logback -->
                                 <relocation>
                                     <pattern>ch.qos.logback</pattern>
                                     <shadedPattern>team.cinenetwork.libs.ch.qos.logback</shadedPattern>
                                 </relocation>
-
-                                <!-- JetBrains Annotations -->
                                 <relocation>
                                     <pattern>org.jetbrains.annotations</pattern>
                                     <shadedPattern>team.cinenetwork.libs.org.jetbrains.annotations</shadedPattern>
                                 </relocation>
-
-                                <!-- Jackson -->
                                 <relocation>
                                     <pattern>com.fasterxml.jackson</pattern>
                                     <shadedPattern>team.cinenetwork.libs.com.fasterxml.jackson</shadedPattern>
                                 </relocation>
-
-                                <!-- Picocli -->
                                 <relocation>
                                     <pattern>picocli</pattern>
                                     <shadedPattern>team.cinenetwork.libs.picocli</shadedPattern>
                                 </relocation>
-
-                                <!-- Lombok (опционально) -->
                                 <relocation>
                                     <pattern>lombok</pattern>
                                     <shadedPattern>team.cinenetwork.libs.lombok</shadedPattern>
                                 </relocation>
-
-                                <!-- Idea -->
                                 <relocation>
                                     <pattern>org.intellij.lang.annotations</pattern>
                                     <shadedPattern>team.cinenetwork.libs.org.intellij.lang.annotations</shadedPattern>
                                 </relocation>
-
                             </relocations>
 
                             <transformers>
@@ -149,7 +132,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.18.0</version>
+            <version>2.21.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
@@ -163,7 +146,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.18</version>
+            <version>1.5.32</version>
             <scope>compile</scope>
         </dependency>
 
@@ -171,35 +154,35 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>26.0.2</version>
+            <version>26.1.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.18.3</version>
+            <version>2.21</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.18.3</version>
+            <version>2.21.2</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/info.picocli/picocli -->
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.7.6</version>
+            <version>4.7.7</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
+            <version>1.18.44</version>
             <scope>provided</scope>
         </dependency>
 
