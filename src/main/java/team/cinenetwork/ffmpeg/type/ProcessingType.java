@@ -1,5 +1,5 @@
 package team.cinenetwork.ffmpeg.type;
 
 public enum ProcessingType {
-    POSTER, TRANSCODE
+    POSTER, TRANSCODE, SINGLE_FILE
 }

@@ -42,6 +42,7 @@ public class FFmpegExecutor {
         List<List<String>> commands = switch (type) {
             case POSTER -> ffmpegCommandCoordinator.buildPosterCommands();
             case TRANSCODE -> ffmpegCommandCoordinator.buildTranscodeCommands();
+            case SINGLE_FILE -> ffmpegCommandCoordinator.buildSingleFileCommands();
         };
 
         for (List<String> command : commands) {

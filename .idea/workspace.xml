@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b0b0b8fa-de4d-4637-89f3-22d40affbf08" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/builder/SingleFileStrategy.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/FFmpegCommandCoordinator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/FFmpegCommandCoordinator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/FFmpegExecutor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/FFmpegExecutor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/type/ProcessingType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/ffmpeg/type/ProcessingType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/options/AppOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/options/AppOptions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/cinenetwork/processor/VideoProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/cinenetwork/processor/VideoProcessor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

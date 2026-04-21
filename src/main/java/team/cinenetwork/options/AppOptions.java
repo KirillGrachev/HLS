@@ -28,6 +28,14 @@ public class AppOptions {
     @Option(names = "--output-overwrite", description = "Overwrite output directory")
     private boolean outputOverwrite;
 
+    @Getter @Setter
+    @Option(names = "--single-file", description = "Generate single MP4 file instead of HLS")
+    private boolean singleFile;
+
+    @Getter @Setter
+    @Option(names = "--output-filename", description = "Base name for output file(s) without extension")
+    private String outputFilename;
+
     //HLS Options
     @Getter @Setter
     @Option(names = "--hls-disable", negatable = true, defaultValue = "false",
@@ -149,6 +157,10 @@ public class AppOptions {
     @Option(names = "--audio-stream",
             description = "Audio stream selector (index:N)")
     private String audioStream;
+
+    @Getter @Setter
+    @Option(names = "--all-audio-tracks", description = "Process all audio tracks separately (requires --single-file)")
+    private boolean allAudioTracks;
 
     //MP4
     @Getter @Setter

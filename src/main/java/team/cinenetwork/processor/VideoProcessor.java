@@ -1,6 +1,7 @@
 package team.cinenetwork.processor;
 
 import team.cinenetwork.ffmpeg.exceptions.ErrorCode;
+import team.cinenetwork.ffmpeg.type.ProcessingType;
 import team.cinenetwork.processor.impl.meta.MetadataParser;
 import team.cinenetwork.utils.FileUtil;
 
@@ -47,12 +48,18 @@ public class VideoProcessor {
             validateMediaStreams(videoInfo);
             normalizeProcessingOptions(videoInfo);
 
-            generateArtifacts();
+            if (options.isSingleFile())
+                ffmpegExecutor.executeMediaProcessing(ProcessingType.SINGLE_FILE);
+            else generateArtifacts();
+
             cleanTemporaryFiles();
 
         } catch (Exception e) {
-            throw team.cinenetwork.ffmpeg.exceptions.Exception.of(ErrorCode.VIDEO_PROCESSING_FAILED,
+
+            throw team.cinenetwork.ffmpeg.exceptions.Exception.of(
+                    team.cinenetwork.ffmpeg.exceptions.ErrorCode.VIDEO_PROCESSING_FAILED,
                     "Video processing failed", e);
+
         }
     }
 
