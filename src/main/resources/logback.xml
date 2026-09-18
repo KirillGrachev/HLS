@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Формат логов совпадает с продуктовой инфографикой:
+  10:24:16.104 [main] INFO  team.cinenetwork.Main - Video processing completed successfully
+-->
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Построчный вывод FFmpeg полезен при отладке, но шумен в проде:
+         локально поднимайте до DEBUG через переменную окружения LOG_LEVEL=DEBUG -->
+    <root level="${LOG_LEVEL:-INFO}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Сборка jar и прогон тестов (Java 21)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Чекаут репозитория
+        uses: actions/checkout@v4
+
+      - name: Определение каталога проекта (pom.xml в корне или в подпапке)
+        id: proj
+        run: |
+          if [ -f pom.xml ]; then
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          elif [ -f cinenetwork-hls/pom.xml ]; then
+            echo "dir=cinenetwork-hls" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::pom.xml не найден ни в корне, ни в cinenetwork-hls/"
+            exit 1
+          fi
+
+      - name: Установка JDK 21 (Temurin) + кэш Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          # кэш Maven привязан к pom проекта
+          cache-dependency-path: ${{ steps.proj.outputs.dir }}/pom.xml
+
+      - name: Сборка и тесты (mvn verify)
+        working-directory: ${{ steps.proj.outputs.dir }}
+        run: mvn -B verify
+
+      - name: Отчёт о покрытии (JaCoCo)
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: ${{ steps.proj.outputs.dir }}/target/site/jacoco/
+
+      - name: Артефакт HLS-<version>.jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: HLS-jar
+          path: ${{ steps.proj.outputs.dir }}/target/HLS-*.jar
