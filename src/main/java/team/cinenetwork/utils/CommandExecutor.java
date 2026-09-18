@@ -28,7 +28,10 @@ import java.util.function.Consumer;
  *       {@value #ERROR_TAIL_LINES} строк) — этого достаточно для диагностики
  *       без вываливания мегабайтов логов;</li>
  *   <li>stdout и stderr объединены ({@code redirectErrorStream}), поэтому прогресс
- *       и ошибки FFmpeg не теряются.</li>
+ *       и ошибки FFmpeg не теряются;</li>
+ *   <li>отмена кооперативная и детерминированная: флаг прерывания проверяется на
+ *       каждой строке вывода и перед ожиданием выхода процесса, поэтому interrupt
+ *       останавливает конвейер сразу, а не «когда FFmpeg допишет лог».</li>
  * </ul>
  */
 @Slf4j
@@ -142,10 +145,14 @@ public class CommandExecutor {
     /**
      * Читает вывод процесса построчно до EOF, передавая каждую строку потребителю
      * (лог или аккумулятор); параллельно держит хвост последних строк для диагностики.
+     *
+     * <p>Кооперативная отмена: флаг прерывания проверяется на каждой строке,
+     * поэтому interrupt останавливает конвейер даже посреди многочасового логопоток
+     * (раньше флаг игнорировался до конца слива вывода).
      */
     private @NotNull Deque<String> readLines(@NotNull Process process,
                                              @NotNull Consumer<String> consumer)
-            throws IOException {
+            throws IOException, InterruptedException {
 
         Deque<String> tail = new ArrayDeque<>(ERROR_TAIL_LINES + 1);
 
@@ -156,6 +163,9 @@ public class CommandExecutor {
             while ((line = reader.readLine()) != null) {
                 consumer.accept(line);
                 rememberTailLine(tail, line);
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("Interrupted while reading process output");
+                }
             }
 
         }
@@ -179,10 +189,18 @@ public class CommandExecutor {
      * Ждёт завершения процесса и проверяет exit-код; при ошибке прикладывает
      * хвост вывода в контекст исключения — обычно этого хватает, чтобы понять,
      * на что ругнулся FFmpeg.
+     *
+     * <p>Перед ожиданием дополнительно проверяет флаг прерывания: если поток уже
+     * помечен на отмену, ждать выхода процесса бессмысленно (именно эта проверка
+     * делает сценарий отмены детерминированным, а не зависимым от гонки с reaper).
      */
     private void finish(@NotNull Process process,
                         @NotNull Deque<String> outputTail)
             throws InterruptedException {
+
+        if (Thread.interrupted()) {
+            throw new InterruptedException("Interrupted before waiting for process exit");
+        }
 
         int exitCode = process.waitFor();
 

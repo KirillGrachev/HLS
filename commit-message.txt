@@ -1,4 +1,4 @@
-﻿feat: HLS subtitles & multi-audio renditions, senior refactor, 137 tests + CI
+feat: HLS subtitles & multi-audio renditions, senior refactor, 137 tests + CI
 
 New version of the Adaptive HLS Orchestrator: subtitle extraction in HLS,
 multi-audio renditions for anime dubs, senior-level refactor (junior-readable),

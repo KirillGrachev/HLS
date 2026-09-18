@@ -13,7 +13,10 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * <p>{@code System.exit} перехватывается SecurityManager-ловушкой: JVM для тестов
  * запускается с {@code -Djava.security.manager=allow} (см. argLine surefire в pom.xml).
+ * SecurityManager deprecated for removal — отсюда {@code @SuppressWarnings("removal")}:
+ * альтернативы для проверки кодов выхода in-process на Java 21 нет.
  */
+@SuppressWarnings("removal")
 class MainTest {
 
     @Test

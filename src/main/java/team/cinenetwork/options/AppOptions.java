@@ -215,7 +215,7 @@ public class AppOptions {
     private String posterFilename = "preview.jpg";
 
     @Option(names = "--poster-seek",
-            description = "Seek position (percent or seconds, e.g. 45% or 120s)")
+            description = "Seek position (percent or seconds, e.g. 45%% or 120s)")
     private String posterSeek = "45%";
 
     @Option(names = "--poster-width", description = "Poster width (pixels)")
