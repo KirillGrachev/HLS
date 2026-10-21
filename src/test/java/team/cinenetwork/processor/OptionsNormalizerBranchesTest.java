@@ -1,6 +1,8 @@
 package team.cinenetwork.processor;
 
 import org.junit.jupiter.api.Test;
+import team.cinenetwork.exception.ErrorCode;
+import team.cinenetwork.exception.ProcessingException;
 import team.cinenetwork.model.VideoInfo;
 import team.cinenetwork.model.VideoStream;
 import team.cinenetwork.options.AppOptions;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -124,6 +127,78 @@ class OptionsNormalizerBranchesTest {
         EncodingProfile profile = new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo(8000));
 
         assertEquals("720p", profile.variants().getFirst().name());
+
+    }
+
+    @Test
+    void zeroSourceDimensionsSkipResolutionFilter() {
+
+        AppOptions options = base();
+        options.setVideoWidths(List.of(3840, 1920));
+        options.setVideoBaseBitrates(List.of(8000));
+        options.setVideoNames(List.of("2160p", "1080p"));
+
+        // ffprobe не отдал ширину: сравнивать ступени не с чем, фильтр выходит рано
+        assertEquals(2, new OptionsNormalizer()
+                .normalizeEncodingOptions(options, probeWithout("width")).variants().size());
+
+        // ширина есть, высоты нет — тот же ранний выход
+        assertEquals(2, new OptionsNormalizer()
+                .normalizeEncodingOptions(options, probeWithout("height")).variants().size());
+
+    }
+
+    /** Источник 1920x1080, из probe-данных исключён один ключ геометрии. */
+    private VideoInfo probeWithout(String key) {
+
+        java.util.HashMap<String, Object> probe = new java.util.HashMap<>(Map.of(
+                "codec_type", "video", "index", 0,
+                "width", 1920, "height", 1080, "r_frame_rate", "24/1",
+                "bit_rate", "8000000"));
+        probe.remove(key);
+
+        VideoInfo info = new VideoInfo();
+        VideoStream video = new VideoStream();
+        video.populateFromProbeData(probe);
+        info.setVideoStream(video);
+        return info;
+
+    }
+
+    @Test
+    void nonPositiveWidthRungIsDroppedFromAllParallelLists() {
+
+        AppOptions options = base();
+        options.setVideoWidths(List.of(1920, 0));        // нулевая ступень бессмысленна
+        options.setVideoBaseBitrates(List.of(8000, 5000));
+        options.setVideoNames(List.of("1080p", "0p"));
+
+        EncodingProfile profile = new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo(8000));
+
+        // удалена из всех параллельных списков синхронно: осталась одна ступень 1080p
+        assertEquals(1, profile.variants().size());
+        assertEquals("1080p", profile.variants().getFirst().name());
+        assertEquals(8000, profile.variants().getFirst().bitrateKbps());
+
+    }
+
+    @Test
+    void dotVariantNamesAreRejected() {
+
+        AppOptions options = base();
+        options.setVideoWidths(List.of(1280));
+        options.setVideoBaseBitrates(List.of(5000));
+
+        // "." и ".." формально состоят из разрешённых символов, но как имя папки
+        // выводят запись за пределы video/ — отклоняются отдельно от паттерна
+        options.setVideoNames(List.of("."));
+        assertThrows(ProcessingException.class,
+                () -> new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo(8000)));
+
+        options.setVideoNames(List.of(".."));
+        ProcessingException e = assertThrows(ProcessingException.class,
+                () -> new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo(8000)));
+        assertEquals(ErrorCode.INVALID_COMMAND_ARGUMENTS, e.getCode());
 
     }
 

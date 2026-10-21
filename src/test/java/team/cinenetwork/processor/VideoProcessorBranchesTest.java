@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -36,6 +37,17 @@ class VideoProcessorBranchesTest {
               "format": {"duration": "120.0"},
               "streams": [
                 {"index":0,"codec_type":"video","width":1280,"height":720,"r_frame_rate":"24/1"}
+              ]
+            }
+            """;
+
+    /** JSON полноценного источника: видео + аудио. */
+    private static final String FULL_PROBE = """
+            {
+              "format": {"duration": "120.0"},
+              "streams": [
+                {"index":0,"codec_type":"video","width":1280,"height":720,"r_frame_rate":"24/1"},
+                {"index":1,"codec_type":"audio","channels":2,"sample_rate":"48000","tags":{"language":"jpn"}}
               ]
             }
             """;
@@ -95,6 +107,20 @@ class VideoProcessorBranchesTest {
         // видеочасть и мастер собрались, постера и субтитров нет
         assertTrue(Files.exists(options.getOutput().resolve("master.m3u8")));
         assertTrue(!Files.exists(options.getOutput().resolve("preview.jpg")));
+
+    }
+
+    @Test
+    void audioOnlyWithAudioPassesValidation() throws IOException {
+
+        AppOptions options = options(FULL_PROBE);
+        options.setAudioOnly(true);
+
+        // аудио в источнике есть — валидация пропускает запуск;
+        // лестница и мастер-плейлист в audio-only режиме не строятся
+        VideoProcessor.create(options).process();
+
+        assertFalse(Files.exists(options.getOutput().resolve("master.m3u8")));
 
     }
 

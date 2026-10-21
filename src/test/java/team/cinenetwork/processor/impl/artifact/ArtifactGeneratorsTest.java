@@ -76,6 +76,28 @@ class ArtifactGeneratorsTest {
     }
 
     @Test
+    void playlistAndAudioDisableFlagsTurnGeneratorsOff() {
+
+        // --playlist-disable гасит только мастер-плейлист: лестница продолжает строиться
+        AppOptions noPlaylist = options();
+        noPlaylist.setPlaylistDisable(true);
+        var noPlaylistGens = generators(noPlaylist, fullInfo());
+        assertFalse(noPlaylistGens.get(4).isEnabled());
+        assertTrue(noPlaylistGens.get(1).isEnabled());
+
+        // --audio-disable: аудио-рендишены не нарезаются
+        AppOptions audioOff = options();
+        audioOff.setAudioDisable(true);
+        assertFalse(generators(audioOff, fullInfo()).get(2).isEnabled());
+
+        // --hls-disable гасит и аудио-рендишены: без лестницы мастер на них не сошлётся
+        AppOptions noHls = options();
+        noHls.setHlsDisable(true);
+        assertFalse(generators(noHls, fullInfo()).get(2).isEnabled());
+
+    }
+
+    @Test
     void namesAreHumanReadable() {
 
         var all = generators(options(), fullInfo());

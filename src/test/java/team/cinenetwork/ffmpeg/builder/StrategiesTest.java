@@ -170,6 +170,56 @@ class StrategiesTest {
 
     }
 
+    @Test
+    void singleFileBlankCustomNameFallsBackToInputName() {
+
+        // пустое кастомное имя — как если бы его не передали: база из имени исходника
+        List<String> args = new SingleFileStrategy(options, videoInfo(), audio(1, "jpn"), "   ").build();
+
+        assertTrue(args.stream().anyMatch(a -> a.equals("/tmp/out/source_jpn.mp4")));
+
+    }
+
+    @Test
+    void singleFileMissingLanguagesBecomeUndAndDeduplicate() {
+
+        VideoInfo info = videoInfo();
+        info.getAudioStreams().clear();
+
+        AudioStream noTag = new AudioStream();
+        noTag.populateFromProbeData(Map.of(
+                "codec_type", "audio", "index", 1, "channels", 2, "sample_rate", "48000"));
+
+        AudioStream blankTag = new AudioStream();
+        blankTag.populateFromProbeData(Map.of(
+                "codec_type", "audio", "index", 2, "channels", 2, "sample_rate", "48000",
+                "tags", Map.of("language", "  ")));
+
+        info.getAudioStreams().add(noTag);
+        info.getAudioStreams().add(blankTag);
+
+        // нет тега языка и пустой тег приводятся к "und", вторая дорожка получает _2
+        List<String> first = new SingleFileStrategy(options, info, noTag, null).build();
+        assertTrue(first.stream().anyMatch(a -> a.endsWith("_und.mp4")));
+
+        List<String> second = new SingleFileStrategy(options, info, blankTag, null).build();
+        assertTrue(second.stream().anyMatch(a -> a.endsWith("_und_2.mp4")));
+
+    }
+
+    @Test
+    void singleFileWithTrackOutsideSourceListGetsPlainName() {
+
+        VideoInfo info = videoInfo();
+        info.getAudioStreams().clear();  // целевая дорожка в списке источника отсутствует
+
+        List<String> args = new SingleFileStrategy(options, info, audio(1, "jpn"), null).build();
+
+        // предшествующих одноязычных дорожек нет — суффикс _2 не появляется
+        assertTrue(args.stream().anyMatch(a -> a.endsWith("_jpn.mp4")));
+
+    }
+
     /* ---------- Фикстуры ---------- */
 
     private AppOptions options() {

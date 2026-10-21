@@ -153,6 +153,8 @@ class AbstractFFmpegStrategyTest {
         assertEquals("high", s.profile("high"));
         assertNull(s.level("high"));
         assertNull(s.level("high@"));
+        // между '@' пусто — это тоже «уровня нет»: пустая строка в -level:v недопустима
+        assertNull(s.level("high@@4.0"));
 
     }
 

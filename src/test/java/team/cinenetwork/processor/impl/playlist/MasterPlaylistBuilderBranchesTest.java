@@ -123,6 +123,69 @@ class MasterPlaylistBuilderBranchesTest {
 
     }
 
+    @Test
+    void sourceWithoutVideoStreamYieldsNoPlaylist() {
+
+        // мастер-плейлист описывает видео-лестницу: нет видеопотока — нет и плейлиста,
+        // причём без исключения (audio-only пайплайн доходит сюда легально)
+        VideoInfo audioOnly = new VideoInfo();
+        AudioStream audio = new AudioStream();
+        audio.populateFromProbeData(Map.of(
+                "codec_type", "audio", "index", 0, "channels", 2,
+                "tags", Map.of("language", "jpn")));
+        audioOnly.getAudioStreams().add(audio);
+        audioOnly.setAudioStream(audio);
+
+        assertTrue(new MasterPlaylistBuilder(options(), audioOnly, profile("1080p")).build().isEmpty());
+
+    }
+
+    @Test
+    void audioDisableFlagOmitsAudioGroup() {
+
+        AppOptions options = options();
+        options.setAudioDisable(true);
+
+        String master = new MasterPlaylistBuilder(options, info(), profile("1080p")).build().orElseThrow();
+
+        assertFalse(master.contains("TYPE=AUDIO"));
+        assertFalse(master.contains("AUDIO=\"audio\""));
+
+    }
+
+    @Test
+    void blankDefaultLanguageFallsBackToFirstTrack() {
+
+        AppOptions options = options();
+        options.setAudioDefaultLanguage("   ");  // пусто по смыслу — как если бы не задали
+
+        String master = new MasterPlaylistBuilder(options, info(), profile("1080p")).build().orElseThrow();
+
+        String jpnLine = lineContaining(master, "LANGUAGE=\"jpn\"");
+        assertTrue(jpnLine.contains("DEFAULT=YES"));
+
+    }
+
+    @Test
+    void trackWithoutLanguageFallsBackToUnd() {
+
+        // языкового тега в контейнере нет: в атрибуты попадает "und",
+        // а не "null" и не пустая строка — плеер должен получить валидный код
+        VideoInfo info = info();
+        info.getAudioStreams().clear();
+        AudioStream noLang = new AudioStream();
+        noLang.populateFromProbeData(Map.of(
+                "codec_type", "audio", "index", 1, "channels", 2));
+        info.getAudioStreams().add(noLang);
+        info.setAudioStream(noLang);
+
+        String master = new MasterPlaylistBuilder(options(), info, profile("1080p")).build().orElseThrow();
+
+        assertTrue(master.contains("LANGUAGE=\"und\""));
+        assertFalse(master.contains("null"));
+
+    }
+
     /* ---------- Фикстуры ---------- */
 
     private AppOptions options() {
