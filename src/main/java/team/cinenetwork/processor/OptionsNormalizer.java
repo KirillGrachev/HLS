@@ -2,14 +2,19 @@ package team.cinenetwork.processor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import team.cinenetwork.exception.ErrorCode;
+import team.cinenetwork.exception.ProcessingException;
 import team.cinenetwork.model.VideoInfo;
 import team.cinenetwork.model.VideoStream;
 import team.cinenetwork.options.AppOptions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntSupplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +34,12 @@ public class OptionsNormalizer {
 
     /** Допуск по размерам источника: ступень до 10% выше источника ещё допустима. */
     private static final double SIZE_TOLERANCE = 1.1;
+
+    /**
+     * Допустимые символы имени варианта: имя становится папкой вывода
+     * ({@code video/<имя>}) и частью URI мастер-плейлиста.
+     */
+    private static final Pattern VARIANT_NAME_PATTERN = Pattern.compile("[A-Za-z0-9._-]+");
 
     /* Дефолты на случай пустых списков от пользователя: пайплайн обязан остаться рабочим. */
     private static final String DEFAULT_CODEC = "libx264";
@@ -59,6 +70,7 @@ public class OptionsNormalizer {
         applyBitrateScalingFactor(options, bitrates);
         dropRungsExceedingSource(videoInfo, widths, bitrates, qualityFactors,
                 codecs, profiles, presets, names);
+        validateVariantNames(names);
 
         List<EncodingProfile.Variant> variants = buildVariants(videoInfo, widths, bitrates,
                 qualityFactors, codecs, profiles, presets, names);
@@ -172,12 +184,20 @@ public class OptionsNormalizer {
     private void applyBitrateScalingFactor(AppOptions options, List<Integer> bitrates) {
 
         double factor = options.getVideoBitrateFactor();
+
+        // Неположительный множитель обнуляет/отрицает всю лестницу: падать нужно
+        // здесь и сейчас, а не через час кодирования пустых ступеней.
+        if (factor <= 0) {
+            throw ProcessingException.of(ErrorCode.INVALID_COMMAND_ARGUMENTS,
+                    "Video bitrate factor must be positive, got: " + factor);
+        }
+
         if (factor == 1.0) {
             return;
         }
 
         for (int i = 0; i < bitrates.size(); i++) {
-            bitrates.set(i, (int) (bitrates.get(i) * factor));
+            bitrates.set(i, (int) Math.round(bitrates.get(i) * factor));
         }
 
     }
@@ -256,6 +276,11 @@ public class OptionsNormalizer {
      * Итоговый битрейт ступени: {@code min(битрейт источника, битрейт лестницы) * quality-фактор}.
      * Битрейт источника ограничивает лестницу сверху: незачем гнать 10000 kbps,
      * если сам источник — 6000 kbps.
+     *
+     * <p>Ступени с неположительным итоговым битрейтом отбрасываются здесь же, с WARN:
+     * мастер-плейлист их всё равно не публикует, а FFmpeg с {@code -b:v 0k} кодирует
+     * мусор либо падает с непонятной ошибкой. План обязан быть согласованным у всех
+     * потребителей: если ступени нет в плейлисте, её не должно быть и в кодировании.
      */
     private @NotNull List<EncodingProfile.Variant> buildVariants(VideoInfo videoInfo,
                                                                  List<Integer> widths,
@@ -280,6 +305,12 @@ public class OptionsNormalizer {
                     : ladderBitrate;
             int finalBitrate = (int) Math.round(cappedBitrate * qualityFactors.get(i));
 
+            if (finalBitrate <= 0) {
+                log.warn("Dropping rung '{}' ({}p): final bitrate is {} kbps, nothing to encode",
+                        names.get(i), widths.get(i), finalBitrate);
+                continue;
+            }
+
             variants.add(new EncodingProfile.Variant(
                     widths.get(i),
                     finalBitrate,
@@ -291,6 +322,41 @@ public class OptionsNormalizer {
         }
 
         return variants;
+
+    }
+
+    /* ---------- Шаг 6: проверить имена вариантов ---------- */
+
+    /**
+     * Проверяет имена ступеней перед сборкой плана.
+     *
+     * <p>Имя варианта — одновременно папка вывода и часть URI мастер-плейлиста.
+     * Дубликаты заставляют две ступени писать в одну папку: сегменты перезаписывают
+     * друг друга, а плеер получает две строки {@code EXT-X-STREAM-INF} с одним URI.
+     * Служебные символы ({@code /}, {@code ..}) выводят путь за пределы выходной
+     * директории. Обе ситуации — ошибка конфигурации, и обнаружить её нужно до
+     * старта многочасового кодирования, а не после.
+     */
+    private void validateVariantNames(List<String> names) {
+
+        Set<String> seen = new HashSet<>();
+
+        for (String name : names) {
+
+            if (!VARIANT_NAME_PATTERN.matcher(name).matches()
+                    || name.equals(".") || name.equals("..")) {
+                throw ProcessingException.of(ErrorCode.INVALID_COMMAND_ARGUMENTS,
+                        "Variant name '" + name + "' is not usable as a folder name:"
+                                + " allowed characters are letters, digits, '.', '_', '-'");
+            }
+
+            if (!seen.add(name)) {
+                throw ProcessingException.of(ErrorCode.INVALID_COMMAND_ARGUMENTS,
+                        "Duplicate variant name '" + name + "': every rung needs its own"
+                                + " output folder and playlist URI");
+            }
+
+        }
 
     }
 

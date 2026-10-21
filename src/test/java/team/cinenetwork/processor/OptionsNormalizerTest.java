@@ -1,6 +1,8 @@
 package team.cinenetwork.processor;
 
 import org.junit.jupiter.api.Test;
+import team.cinenetwork.exception.ErrorCode;
+import team.cinenetwork.exception.ProcessingException;
 import team.cinenetwork.model.VideoInfo;
 import team.cinenetwork.model.VideoStream;
 import team.cinenetwork.options.AppOptions;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -87,7 +90,7 @@ class OptionsNormalizerTest {
         AppOptions options = new AppOptions();
         options.setOutput(Path.of("/tmp/out"));
         options.setVideoWidths(List.of(1280));
-        options.setVideoBaseBitrates(List.of());   // пусто: битрейт ступени станет 0
+        options.setVideoBaseBitrates(List.of(5000));
         options.setVideoCodecs(List.of());         // пусто: libx264
         options.setVideoProfiles(List.of());       // пусто: high@4.0
         options.setVideoPresets(List.of());        // пусто: medium
@@ -101,7 +104,65 @@ class OptionsNormalizerTest {
         assertEquals("high@4.0", v.profileLevel());
         assertEquals("medium", v.preset());
         assertEquals("720p", v.name());
-        assertEquals(0, v.bitrateKbps());
+
+    }
+
+    @Test
+    void rungsWithNonPositiveFinalBitrateAreDropped() {
+
+        AppOptions options = new AppOptions();
+        options.setOutput(Path.of("/tmp/out"));
+        options.setVideoWidths(List.of(1920, 1280, 854));
+        options.setVideoBaseBitrates(List.of(8000, 0, -500));
+        options.setVideoNames(List.of("1080p", "720p", "480p"));
+
+        EncodingProfile profile = new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo1080p());
+
+        // нулевая и отрицательная ступени не играют и не кодируются: в плане их нет
+        assertEquals(1, profile.variants().size());
+        assertEquals("1080p", profile.variants().getFirst().name());
+
+    }
+
+    @Test
+    void nonPositiveBitrateFactorFailsFast() {
+
+        AppOptions options = new AppOptions();
+        options.setOutput(Path.of("/tmp/out"));
+        options.setVideoWidths(List.of(1280));
+        options.setVideoBitrateFactor(0.0);
+
+        ProcessingException e = assertThrows(ProcessingException.class,
+                () -> new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo1080p()));
+        assertEquals(ErrorCode.INVALID_COMMAND_ARGUMENTS, e.getCode());
+
+    }
+
+    @Test
+    void duplicateVariantNamesAreRejected() {
+
+        AppOptions options = new AppOptions();
+        options.setOutput(Path.of("/tmp/out"));
+        options.setVideoWidths(List.of(1920, 1280));
+        options.setVideoNames(List.of("720p", "720p"));
+
+        ProcessingException e = assertThrows(ProcessingException.class,
+                () -> new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo1080p()));
+        assertEquals(ErrorCode.INVALID_COMMAND_ARGUMENTS, e.getCode());
+
+    }
+
+    @Test
+    void variantNamesMustBePathSafe() {
+
+        AppOptions options = new AppOptions();
+        options.setOutput(Path.of("/tmp/out"));
+        options.setVideoWidths(List.of(1920, 1280));
+        options.setVideoNames(List.of("1080p", "../evil"));
+
+        ProcessingException e = assertThrows(ProcessingException.class,
+                () -> new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo1080p()));
+        assertEquals(ErrorCode.INVALID_COMMAND_ARGUMENTS, e.getCode());
 
     }
 

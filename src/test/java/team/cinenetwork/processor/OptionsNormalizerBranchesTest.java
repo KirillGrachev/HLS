@@ -117,8 +117,9 @@ class OptionsNormalizerBranchesTest {
 
         AppOptions options = base();
         options.setVideoWidths(List.of(1280));
+        options.setVideoBaseBitrates(List.of(5000));
         options.setVideoNames(List.of());
-        options.setRatio("0:9");  // ноль в знаменателе → фолбэк 16:9 → автовариант 720p
+        options.setRatio("0:9");  // ноль в числителе → фолбэк 16:9 → автовариант 720p
 
         EncodingProfile profile = new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo(8000));
 
