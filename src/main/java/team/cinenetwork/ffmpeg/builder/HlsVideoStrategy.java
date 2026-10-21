@@ -58,11 +58,18 @@ public class HlsVideoStrategy extends AbstractFFmpegStrategy {
         int bitrateKbps = variant.bitrateKbps();
         int keyframeInterval = calculateKeyframeInterval();
 
-        return List.of(
+        List<String> args = new ArrayList<>(List.of(
                 "-map", "0:" + video.getStreamIndex(),
                 "-c:v", variant.codec(),
-                "-profile:v", extractProfileLevel(variant.profileLevel(), true),
-                "-level:v", extractProfileLevel(variant.profileLevel(), false),
+                "-profile:v", extractProfile(variant.profileLevel())
+        ));
+
+        String level = extractLevel(variant.profileLevel());
+        if (level != null) {
+            args.addAll(List.of("-level:v", level));
+        }
+
+        args.addAll(List.of(
                 "-b:v", bitrateKbps + "k",
                 "-maxrate:v", bitrateKbps + "k",
                 "-bufsize:v", (int) (bitrateKbps * 1.5) + "k",
@@ -70,7 +77,9 @@ public class HlsVideoStrategy extends AbstractFFmpegStrategy {
                 "-keyint_min", String.valueOf(keyframeInterval),
                 "-vf", buildVideoFilter(resolution),
                 "-preset", variant.preset()
-        );
+        ));
+
+        return args;
 
     }
 

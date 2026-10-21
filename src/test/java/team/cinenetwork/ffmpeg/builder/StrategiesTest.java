@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -39,6 +40,21 @@ class StrategiesTest {
         assertTrue(args.stream().noneMatch(a -> a.equals("-c:a")));
         assertTrue(args.contains(String.join("/", "", "tmp", "out", "video", "1080p", "playlist.m3u8")
                 .replaceFirst("^/", "/")));
+
+    }
+
+    @Test
+    void hlsVideoStrategyOmitsLevelWhenProfileCarriesNone() {
+
+        EncodingProfile.Variant noLevel =
+                new EncodingProfile.Variant(1280, 4000, "libx264", "high", "slow", "720p");
+
+        List<String> args = new HlsVideoStrategy(options, videoInfo, noLevel).build();
+
+        assertTrue(args.containsAll(List.of("-profile:v", "high")));
+        // без уровня -level:v не передаётся вовсе: раньше сюда попадал "main",
+        // а это имя профиля, не уровня — x264 отвергает такую команду
+        assertFalse(args.contains("-level:v"));
 
     }
 

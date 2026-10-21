@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -51,8 +52,12 @@ class AbstractFFmpegStrategyTest {
             return calculateKeyframeInterval();
         }
 
-        String profile(String value, boolean isProfile) {
-            return extractProfileLevel(value, isProfile);
+        String profile(String value) {
+            return extractProfile(value);
+        }
+
+        String level(String value) {
+            return extractLevel(value);
         }
 
         List<String> audio(AudioStream audio) {
@@ -109,6 +114,9 @@ class AbstractFFmpegStrategyTest {
 
         assertEquals("50", s.seek("50%", 100.0));
         assertEquals("120", s.seek("120s", 100.0));
+        // дробные значения: постер с точностью до кадра целыми секундами не берётся
+        assertEquals("25", s.seek("12.5%", 200.0));
+        assertEquals("1.5", s.seek("1.5s", 100.0));
         assertThrows(ProcessingException.class, () -> s.seek("half", 100.0));
 
     }
@@ -133,13 +141,18 @@ class AbstractFFmpegStrategyTest {
     }
 
     @Test
-    void extractProfileLevelWithAndWithoutLevel() {
+    void extractProfileAndLevelFromProfileLevelString() {
 
         TestStrategy s = strategy(video("24/1"));
 
-        assertEquals("high", s.profile("high@5.2", true));
-        assertEquals("5.2", s.profile("high@5.2", false));
-        assertEquals("main", s.profile("high", false));  // нет уровня → main
+        assertEquals("high", s.profile("high@5.2"));
+        assertEquals("5.2", s.level("high@5.2"));
+
+        // уровня нет → null, а не выдуманный "main": вызывающий код просто
+        // не передаст -level:v, и кодек выберет уровень сам
+        assertEquals("high", s.profile("high"));
+        assertNull(s.level("high"));
+        assertNull(s.level("high@"));
 
     }
 

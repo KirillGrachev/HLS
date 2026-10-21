@@ -3,6 +3,7 @@ package team.cinenetwork.ffmpeg.builder.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.cinenetwork.exception.ErrorCode;
 import team.cinenetwork.exception.ProcessingException;
 import team.cinenetwork.model.AudioStream;
@@ -35,8 +36,13 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
 
-    /** Форматы seek-позиции: проценты ("45%") или секунды ("120s"). */
-    private static final Pattern SEEK_PATTERN = Pattern.compile("(\\d+)%|(\\d+)s");
+    /**
+     * Форматы seek-позиции: проценты ({@code "45%"}, {@code "12.5%"}) или секунды
+     * ({@code "120s"}, {@code "1.5s"}). Дробная часть разрешена: постер часто хочется
+     * снять с точностью до кадра, а целых секунд для этого не хватает.
+     */
+    private static final Pattern SEEK_PATTERN =
+            Pattern.compile("(\\d+(?:\\.\\d+)?)%|(\\d+(?:\\.\\d+)?)s");
 
     protected final AppOptions options;
     protected final VideoInfo videoInfo;
@@ -102,7 +108,7 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
 
     }
 
-    /** Разбирает seek "45%" / "120s" в секунды (для {@code -ss}). */
+    /** Разбирает seek "45%" / "12.5%" / "120s" / "1.5s" в секунды (для {@code -ss}). */
     protected @NotNull String parseSeekPosition(String seek, double durationSeconds) {
 
         Matcher matcher = SEEK_PATTERN.matcher(seek);
@@ -134,17 +140,28 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
     /* ---------- Кодеки ---------- */
 
     /**
-     * Достаёт профиль ("high") или уровень ("5.2") из строки вида "high@5.2".
-     *
-     * @param profileLevel строка профиля вида {@code profile@level}
-     * @param isProfile    true — вернуть профиль, false — уровень
+     * Профиль из строки вида {@code "high@5.2"}: часть до {@code @}
+     * (или вся строка, если уровня нет).
      */
-    protected @NotNull String extractProfileLevel(@NotNull String profileLevel,
-                                                  boolean isProfile) {
+    protected @NotNull String extractProfile(@NotNull String profileLevel) {
+        return profileLevel.split("@")[0];
+    }
+
+    /**
+     * Уровень из строки вида {@code "high@5.2"}: часть после {@code @};
+     * {@code null}, если уровень в строке не задан.
+     *
+     * <p>Раньше при отсутствии {@code @} уровнем по умолчанию считался {@code "main"}
+     * и попадал в {@code -level:v}. Но {@code "main"} — имя профиля, а не уровня:
+     * x264 отвергает такую команду целиком. Честнее вернуть {@code null} и позволить
+     * вызывающему коду не передавать {@code -level:v} вовсе — тогда кодек выберет
+     * уровень сам, по разрешению и битрейту.
+     */
+    protected @Nullable String extractLevel(@NotNull String profileLevel) {
 
         String[] parts = profileLevel.split("@");
 
-        return isProfile ? parts[0] : parts.length > 1 ? parts[1] : "main";
+        return parts.length > 1 && !parts[1].isBlank() ? parts[1] : null;
 
     }
 
