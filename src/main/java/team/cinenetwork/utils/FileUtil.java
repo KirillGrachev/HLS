@@ -23,6 +23,14 @@ public class FileUtil {
      * существует и {@code overwriteExisting} — переиспользует; существует и перезапись
      * запрещена — бросает {@code DIRECTORY_EXISTS}, чтобы молча не уничтожить чужие данные.
      *
+     * <p>Если по указанному пути лежит обычный файл, метод бросает
+     * {@code INVALID_DIRECTORY_PATH} независимо от {@code overwriteExisting}.
+     * Проверка нужна именно здесь: раньше путь-файл попадал в ветку «переиспользую»
+     * и метод рапортовал успех, а падение случалось позже — на первой же записи
+     * плейлиста, с {@code FileAlreadyExistsException} или {@code NotDirectoryException}
+     * из глубины пайплайна. К тому моменту исходник уже был прочитан, а часть
+     * выходных файлов создана, то есть диагностика указывала не на причину.
+     *
      * @param directoryPath    путь выходной директории
      * @param overwriteExisting разрешено ли переиспользовать существующую директорию
      * @throws IOException при ошибке создания директории
@@ -34,6 +42,7 @@ public class FileUtil {
         validatePathNotNull(directoryPath);
 
         if (Files.exists(directoryPath)) {
+            validateIsDirectory(directoryPath);
             handleExistingDirectory(directoryPath, overwriteExisting);
         } else {
             createNewDirectory(directoryPath);
