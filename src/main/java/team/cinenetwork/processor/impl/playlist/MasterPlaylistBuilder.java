@@ -58,11 +58,30 @@ public class MasterPlaylistBuilder {
 
         StringBuilder content = new StringBuilder("#EXTM3U\n#EXT-X-VERSION:5\n");
 
-        appendAudioMediaEntries(content, audioRenditions);
-        appendSubtitleMediaEntries(content, subtitleRenditions);
+        List<AudioRendition> resolvedAudio = audioRenditions;
+        List<SubtitleRendition> resolvedSubs = subtitleRenditions;
+
+        // Сегменты режутся по ключевым кадрам (-force_key_frames в команде
+        // кодирования), то есть каждый сегмент декодируется независимо. Без этого
+        // тега плеер обязан считать, что зависимости есть, и не может ни начать
+        // воспроизведение с произвольного сегмента, ни переключать вариант без
+        // перебуферизации.
+        content.append("#EXT-X-INDEPENDENT-SEGMENTS\n");
+
+        int defaultAudioIndex = resolveDefaultIndex(resolvedAudio,
+                options.getAudioDefaultLanguage(),
+                rendition -> rendition.stream().getLanguage(),
+                "audio");
+        int defaultSubtitleIndex = resolveDefaultIndex(resolvedSubs,
+                options.getSubsDefaultLanguage(),
+                rendition -> rendition.stream().getLanguage(),
+                "subtitles");
+
+        appendAudioMediaEntries(content, resolvedAudio, defaultAudioIndex);
+        appendSubtitleMediaEntries(content, resolvedSubs, defaultSubtitleIndex);
         appendVariantEntries(content,
-                !audioRenditions.isEmpty(),
-                !subtitleRenditions.isEmpty());
+                !resolvedAudio.isEmpty(),
+                !resolvedSubs.isEmpty());
 
         return content.toString();
 
@@ -81,42 +100,33 @@ public class MasterPlaylistBuilder {
     }
 
     private void appendAudioMediaEntries(StringBuilder content,
-                                         List<AudioRendition> renditions) {
+                                         List<AudioRendition> renditions,
+                                         int defaultIndex) {
+
+        // Тег кодека зависит только от --audio-profile и одинаков для всех
+        // рендишенов группы, поэтому вычисляется один раз, а не на каждой итерации.
+        Optional<String> codecTag = CodecTags.audioCodecTag(options.getAudioProfile());
 
         for (int i = 0; i < renditions.size(); i++) {
-            content.append(buildAudioMediaLine(renditions.get(i),
-                    isDefaultAudio(renditions.get(i), i)));
+            content.append(buildAudioMediaLine(renditions.get(i), i == defaultIndex, codecTag));
         }
-
-    }
-
-    /** DEFAULT: язык из {@code --audio-default-language}, иначе первая дорожка. */
-    private boolean isDefaultAudio(AudioRendition rendition, int index) {
-
-        String requested = options.getAudioDefaultLanguage();
-        if (requested == null || requested.isBlank()) {
-            return index == 0;
-        }
-
-        return requested.equalsIgnoreCase(rendition.stream().getLanguage());
 
     }
 
     private @NotNull String buildAudioMediaLine(AudioRendition rendition,
-                                                boolean isDefault) {
-
-        Optional<String> codecTag = CodecTags.audioCodecTag(options.getAudioProfile());
+                                                boolean isDefault,
+                                                Optional<String> codecTag) {
 
         StringBuilder line = new StringBuilder("#EXT-X-MEDIA:TYPE=AUDIO")
                 .append(",GROUP-ID=\"").append(AUDIO_GROUP_ID).append('"')
-                .append(",NAME=\"").append(escape(rendition.stream().getDisplayName())).append('"')
-                .append(",LANGUAGE=\"").append(rendition.stream().getLanguage()).append('"')
+                .append(",NAME=\"").append(quoted(rendition.stream().getDisplayName())).append('"')
+                .append(",LANGUAGE=\"").append(quoted(rendition.stream().getLanguage())).append('"')
                 .append(",AUTOSELECT=YES")
                 .append(",DEFAULT=").append(isDefault ? "YES" : "NO")
                 .append(",CHANNELS=\"").append(rendition.stream().getChannelCount()).append('"');
 
-        codecTag.ifPresent(tag -> line.append(",CODECS=\"").append(tag).append('"'));
-        line.append(",URI=\"").append(rendition.playlistUri()).append("\"\n");
+        codecTag.ifPresent(tag -> line.append(",CODECS=\"").append(quoted(tag)).append('"'));
+        line.append(",URI=\"").append(quoted(rendition.playlistUri())).append("\"\n");
 
         return line.toString();
 
@@ -135,24 +145,22 @@ public class MasterPlaylistBuilder {
     }
 
     private void appendSubtitleMediaEntries(StringBuilder content,
-                                            List<SubtitleRendition> renditions) {
+                                            List<SubtitleRendition> renditions,
+                                            int defaultIndex) {
 
-        for (SubtitleRendition rendition : renditions) {
-            content.append(buildSubtitleMediaLine(rendition));
+        for (int i = 0; i < renditions.size(); i++) {
+            content.append(buildSubtitleMediaLine(renditions.get(i), i == defaultIndex));
         }
 
     }
 
-    private @NotNull String buildSubtitleMediaLine(SubtitleRendition rendition) {
-
-        boolean isDefault = options.getSubsDefaultLanguage() != null
-                && options.getSubsDefaultLanguage()
-                        .equalsIgnoreCase(rendition.stream().getLanguage());
+    private @NotNull String buildSubtitleMediaLine(SubtitleRendition rendition,
+                                                   boolean isDefault) {
 
         StringBuilder line = new StringBuilder("#EXT-X-MEDIA:TYPE=SUBTITLES")
                 .append(",GROUP-ID=\"").append(SUBTITLES_GROUP_ID).append('"')
-                .append(",NAME=\"").append(escape(rendition.stream().getDisplayName())).append('"')
-                .append(",LANGUAGE=\"").append(rendition.stream().getLanguage()).append('"')
+                .append(",NAME=\"").append(quoted(rendition.stream().getDisplayName())).append('"')
+                .append(",LANGUAGE=\"").append(quoted(rendition.stream().getLanguage())).append('"')
                 .append(",AUTOSELECT=YES")
                 .append(",DEFAULT=").append(isDefault ? "YES" : "NO");
 
@@ -160,7 +168,7 @@ public class MasterPlaylistBuilder {
             line.append(",FORCED=YES");
         }
 
-        line.append(",URI=\"").append(rendition.playlistUri()).append("\"\n");
+        line.append(",URI=\"").append(quoted(rendition.playlistUri())).append("\"\n");
 
         return line.toString();
 
@@ -175,7 +183,12 @@ public class MasterPlaylistBuilder {
         for (EncodingProfile.Variant variant : profile.variants()) {
 
             if (variant.bitrateKbps() <= 0) {
-                log.debug("Skipping variant '{}' with zero bitrate", variant.name());
+                // WARN, а не DEBUG: пропавшая ступень лестницы видна только в
+                // готовом плейлисте, и искать причину в отладочном логе, который
+                // в бою обычно выключен, — значит искать вслепую.
+                log.warn("Skipping variant '{}' because its bitrate is {} kbps;"
+                                + " the master playlist will not offer this resolution",
+                        variant.name(), variant.bitrateKbps());
                 continue;
             }
 
@@ -201,7 +214,7 @@ public class MasterPlaylistBuilder {
                 .append(String.format(Locale.ROOT, ",FRAME-RATE=%.3f", frameRate));
 
         CodecTags.videoCodecTag(variant.codec(), variant.profileLevel())
-                .ifPresent(tag -> line.append(",CODECS=\"").append(tag).append('"'));
+                .ifPresent(tag -> line.append(",CODECS=\"").append(quoted(tag)).append('"'));
 
         if (hasAudioGroup) {
             line.append(",AUDIO=\"").append(AUDIO_GROUP_ID).append('"');
@@ -211,7 +224,7 @@ public class MasterPlaylistBuilder {
             line.append(",SUBTITLES=\"").append(SUBTITLES_GROUP_ID).append('"');
         }
 
-        line.append(",NAME=\"").append(escape(variant.name())).append("\"\n");
+        line.append(",NAME=\"").append(quoted(variant.name())).append("\"\n");
 
         return line.toString();
 
@@ -232,8 +245,74 @@ public class MasterPlaylistBuilder {
 
     /* ---------- Вспомогательные ---------- */
 
-    /** Кавычки внутри NAME/URI ломают парсинг плейлиста — меняем их на апострофы. */
-    private @NotNull String escape(String value) {
+    /**
+     * Определяет единственный рендишен группы, который помечается DEFAULT=YES.
+     *
+     * <p>Спецификация HLS запрещает более одного DEFAULT=YES в группе, поэтому
+     * выбирается индекс, а не флаг на рендишен. Прежнее сравнение языка прямо в
+     * построителе строки давало DEFAULT=YES каждой дорожке с запрошенным языком:
+     * при двух русских дорожках обе становились дефолтными, и часть плееров
+     * выбирала произвольную либо отказывалась воспроизводить группу.
+     *
+     * <p>Если запрошенный язык не найден ни в одной дорожке, дефолтом назначается
+     * первая. Раньше в этом случае DEFAULT=YES не получал никто, и выбор падал на
+     * плеер: результат зависел от клиента, а не от настройки, и воспроизводилось
+     * «то, что плеер сочтёт нужным» вместо запрошенного пользователем поведения.
+     *
+     * @param renditions         рендишены группы
+     * @param requestedLanguage  язык из опций, может быть null или пустым
+     * @param languageOf         способ получить язык рендишена
+     * @param groupName          имя группы для сообщения в логе
+     * @param <T>                тип рендишена
+     * @return индекс дефолтного рендишена либо -1 для пустой группы
+     */
+    private <T> int resolveDefaultIndex(@NotNull List<T> renditions,
+                                        String requestedLanguage,
+                                        @NotNull java.util.function.Function<T, String> languageOf,
+                                        @NotNull String groupName) {
+
+        if (renditions.isEmpty()) {
+            return -1;
+        }
+
+        if (requestedLanguage == null || requestedLanguage.isBlank()) {
+            return 0;
+        }
+
+        for (int i = 0; i < renditions.size(); i++) {
+            if (requestedLanguage.equalsIgnoreCase(languageOf.apply(renditions.get(i)))) {
+                return i;
+            }
+        }
+
+        log.warn("Requested default {} language '{}' matches no rendition;"
+                        + " falling back to the first one so that the group still has DEFAULT=YES",
+                groupName, requestedLanguage);
+
+        return 0;
+
+    }
+
+    /**
+     * Экранирует значение, которое подставляется внутрь двойных кавычек атрибута.
+     *
+     * <p>Двойная кавычка заменяется апострофом. Экранирование обязательно для всех
+     * значений из метаданных, а не только для NAME: язык дорожки и отображаемое
+     * имя берутся из контейнера, то есть из данных, которыми библиотека не
+     * управляет. Неэкранированная кавычка не просто ломает парсинг строки — она
+     * позволяет метаданным добавить в тег собственные атрибуты, например
+     * {@code rus",DEFAULT="YES}, и переопределить поведение плеера.
+     *
+     * <p>Прежнее {@code escape} применялось только к NAME, хотя LANGUAGE и URI
+     * подставлялись в кавычки точно так же. Частичное экранирование хуже его
+     * отсутствия: оно создаёт уверенность, что значения из метаданных безопасны.
+     *
+     * @param value исходное значение, может быть null
+     * @return значение, пригодное для подстановки в кавычки атрибута
+     */
+    private @NotNull String quoted(String value) {
+
         return value == null ? "" : value.replace('"', '\'');
+
     }
 }
