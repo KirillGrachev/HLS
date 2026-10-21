@@ -137,35 +137,30 @@ class OptionsNormalizerTest {
     }
 
     @Test
-    void explicitMp4AndPosterValuesAreRespected() {
+    void explicitPosterValueIsRespected() {
 
         AppOptions options = new AppOptions();
         options.setOutput(Path.of("/tmp/out"));
-        options.setMp4Width(640);
         options.setPosterWidth(320);
-        options.setMp4Bitrate(1234);
 
         EncodingProfile profile = new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo1080p());
 
-        assertEquals(640, profile.mp4Width());
         assertEquals(320, profile.posterWidth());
-        assertEquals(1234, profile.mp4BitrateKbps());  // явный битрейт умножен на factor=1.0
 
     }
 
     @Test
-    void mp4WidthOutsideLadderFallsBackToMaxRung() {
+    void posterWidthOutsideLadderFallsBackToMaxWidth() {
 
         AppOptions options = new AppOptions();
         options.setOutput(Path.of("/tmp/out"));
         options.setVideoWidths(List.of(1920, 1280));
         options.setVideoBaseBitrates(List.of(8000, 5000));
-        options.setMp4MaxWidth(1000);  // ни одна ступень не подходит -> ширина 1000, битрейт старшей ступени * 1.5
+        options.setPosterMaxWidth(1000);  // ни одна ступень не подходит -> предел 1000
 
         EncodingProfile profile = new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo1080p());
 
-        assertEquals(1000, profile.mp4Width());
-        assertEquals(12000, profile.mp4BitrateKbps());
+        assertEquals(1000, profile.posterWidth());
 
     }
 

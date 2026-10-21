@@ -76,7 +76,7 @@ class MasterPlaylistBuilderBranchesTest {
         EncodingProfile profile = new EncodingProfile(List.of(
                 new EncodingProfile.Variant(1920, 0, "libx264", "high@5.2", "slow", "1080p"),
                 new EncodingProfile.Variant(1280, 5000, "libx264", "high@5.1", "slow", "720p")
-        ), 1920, 1920, 12000);
+        ), 1920);
 
         String master = new MasterPlaylistBuilder(options(), info(), profile).build().orElseThrow();
 
@@ -93,7 +93,7 @@ class MasterPlaylistBuilderBranchesTest {
         EncodingProfile profile = new EncodingProfile(List.of(
                 new EncodingProfile.Variant(1920, 0, "libx264", "high@5.2", "slow", "1080p"),
                 new EncodingProfile.Variant(1280, -5, "libx264", "high@5.1", "slow", "720p")
-        ), 1920, 1920, 12000);
+        ), 1920);
 
         assertTrue(new MasterPlaylistBuilder(options(), info(), profile).build().isEmpty());
 
@@ -140,7 +140,7 @@ class MasterPlaylistBuilderBranchesTest {
 
         return new EncodingProfile(List.of(
                 new EncodingProfile.Variant(1920, 8000, "libx264", "high@5.2", "slow", name)
-        ), 1920, 1920, 12000);
+        ), 1920);
 
     }
 

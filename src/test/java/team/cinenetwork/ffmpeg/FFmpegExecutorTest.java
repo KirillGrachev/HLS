@@ -66,7 +66,7 @@ class FFmpegExecutorTest {
 
         return new EncodingProfile(List.of(
                 new EncodingProfile.Variant(1920, 8000, "libx264", "high@5.2", "slow", "1080p")
-        ), 1920, 1920, 12000);
+        ), 1920);
 
     }
 }

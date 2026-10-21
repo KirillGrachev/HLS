@@ -78,14 +78,8 @@ public class AppOptions {
     @Option(names = "--hls-time", description = "HLS segment duration (seconds)")
     private int hlsTime = 6;
 
-    @Option(names = "--hls-segments", description = "HLS segment filename pattern")
-    private String hlsSegments = "{index}";
-
     @Option(names = "--hls-segment-prefix", description = "Segment prefix in playlists")
     private String hlsSegmentPrefix = "";
-
-    @Option(names = "--hls-playlist-prefix", description = "Playlist URI prefixes")
-    private List<String> hlsPlaylistPrefix = new ArrayList<>();
 
     @Option(names = "--hls-master-playlist",
             description = "Master playlist filename (as on the product banner: master.m3u8)")
@@ -185,26 +179,6 @@ public class AppOptions {
                     + "(default: none, player chooses automatically)")
     private String subsDefaultLanguage;
 
-    /* ==================== MP4 (режим single-file) ==================== */
-
-    @Option(names = "--mp4-width", description = "MP4 width (pixels)")
-    private Integer mp4Width;
-
-    @Option(names = "--mp4-max-width", description = "Max MP4 width")
-    private int mp4MaxWidth = 1920;
-
-    @Option(names = "--mp4-bitrate-factor", description = "MP4 bitrate multiplier")
-    private double mp4BitrateFactor = 1.5;
-
-    @Option(names = "--mp4-bitrate", description = "MP4 bitrate (kbps)")
-    private Integer mp4Bitrate;
-
-    @Option(names = "--mp4-codec", description = "MP4 codec")
-    private String mp4Codec = "h264";
-
-    @Option(names = "--mp4-profile", description = "MP4 profile")
-    private String mp4Profile = "high@5.2";
-
     /* ==================== Постер ==================== */
 
     @Option(names = "--poster-enabled", negatable = true, arity = "0..1", fallbackValue = "true",
@@ -238,10 +212,9 @@ public class AppOptions {
     @Option(names = "--ffprobe", description = "FFprobe executable")
     private String ffprobe = "ffprobe";
 
-    @Option(names = "--mp4file", description = "MP4file executable")
-    private String mp4file = "mp4file";
-
-    @Option(names = "--ratio", description = "Aspect ratio used for playlist RESOLUTION tags")
+    @Option(names = "--ratio",
+            description = "Aspect ratio used to auto-name video rungs (e.g. 854 -> 480p) "
+                    + "when --video-names has fewer entries than --video-widths")
     private String ratio = "16:9";
 
     public enum HlsType {
@@ -261,14 +234,6 @@ public class AppOptions {
     /* Защитные копии: picocli инжектит списки прямо в поля,
        а внешний код не должен иметь возможности молча менять состояние CLI. */
 
-    public List<String> getHlsPlaylistPrefix() {
-        return new ArrayList<>(hlsPlaylistPrefix);
-    }
-
-    public void setHlsPlaylistPrefix(List<String> value) {
-        this.hlsPlaylistPrefix = value != null ? new ArrayList<>(value) : new ArrayList<>();
-    }
-
     public List<Integer> getVideoWidths() {
         return new ArrayList<>(videoWidths);
     }
@@ -287,6 +252,10 @@ public class AppOptions {
 
     public List<Double> getVideoQualityFactors() {
         return new ArrayList<>(videoQualityFactors);
+    }
+
+    public void setVideoQualityFactors(List<Double> value) {
+        this.videoQualityFactors = value != null ? new ArrayList<>(value) : new ArrayList<>();
     }
 
     public List<String> getVideoCodecs() {

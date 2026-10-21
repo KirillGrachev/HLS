@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * <p>Шаги нормализации строго упорядочены: убрать ступени с некорректной шириной →
  * выровнять длины параллельных списков → применить глобальный множитель битрейта →
  * убрать ступени выше источника → посчитать итоговый битрейт каждой ступени →
- * подобрать ширины постера/MP4 и битрейт MP4.
+ * подобрать ширину постера.
  *
  * <p>Важно: класс не мутирует {@link AppOptions}. Опции — «что попросил пользователь»,
  * профиль — «что реально будет закодировано»; все мутации происходят только на
@@ -29,9 +29,6 @@ public class OptionsNormalizer {
 
     /** Допуск по размерам источника: ступень до 10% выше источника ещё допустима. */
     private static final double SIZE_TOLERANCE = 1.1;
-
-    /** Фолбэк-битрейт, если расчёт невозможен (пустая лестница). */
-    private static final int FALLBACK_BITRATE_KBPS = 3000;
 
     /* Дефолты на случай пустых списков от пользователя: пайплайн обязан остаться рабочим. */
     private static final String DEFAULT_CODEC = "libx264";
@@ -68,11 +65,8 @@ public class OptionsNormalizer {
 
         int posterWidth = valueOrDefault(options.getPosterWidth(),
                 () -> findClosestValidWidth(widths, options.getPosterMaxWidth()));
-        int mp4Width = valueOrDefault(options.getMp4Width(),
-                () -> findClosestValidWidth(widths, options.getMp4MaxWidth()));
-        int mp4Bitrate = computeMp4Bitrate(options, variants, mp4Width);
 
-        EncodingProfile profile = new EncodingProfile(variants, posterWidth, mp4Width, mp4Bitrate);
+        EncodingProfile profile = new EncodingProfile(variants, posterWidth);
         logProfile(profile);
 
         return profile;
@@ -300,39 +294,6 @@ public class OptionsNormalizer {
 
     }
 
-    /* ---------- Шаг 6: битрейт MP4 ---------- */
-
-    /** Явный {@code --mp4-bitrate} приоритетен; иначе берём ступень mp4Width с множителем. */
-    private int computeMp4Bitrate(AppOptions options,
-                                  List<EncodingProfile.Variant> variants,
-                                  int mp4Width) {
-
-        if (options.getMp4Bitrate() != null) {
-            return (int) (options.getMp4Bitrate() * options.getVideoBitrateFactor());
-        }
-
-        if (variants.isEmpty()) {
-            log.warn("MP4 bitrate calculation failed (empty ladder), using fallback {} kbps",
-                    FALLBACK_BITRATE_KBPS);
-            return FALLBACK_BITRATE_KBPS;
-        }
-
-        int baseBitrate = variants.stream()
-                .filter(variant -> variant.width() == mp4Width)
-                .map(EncodingProfile.Variant::bitrateKbps)
-                .findFirst()
-                .orElseGet(() -> variants.stream()
-                        .map(EncodingProfile.Variant::bitrateKbps)
-                        .max(Integer::compare)
-                        .orElse(FALLBACK_BITRATE_KBPS));
-
-        int computed = (int) (baseBitrate * options.getMp4BitrateFactor());
-        log.info("Computed MP4 bitrate: {} kbps (based on {}p variant)", computed, mp4Width);
-
-        return computed;
-
-    }
-
     /* ---------- Вспомогательные ---------- */
 
     private int valueOrDefault(Integer explicitValue, IntSupplier defaultValue) {
@@ -352,14 +313,12 @@ public class OptionsNormalizer {
     /** Человекочитаемая сводка плана в лог. */
     private void logProfile(EncodingProfile profile) {
 
-        log.info("Encoding profile ready: {} variant(s) [{}], poster {}p, mp4 {}p@{}k",
+        log.info("Encoding profile ready: {} variant(s) [{}], poster {}p",
                 profile.variants().size(),
                 profile.variants().stream()
                         .map(v -> v.name() + "@" + v.bitrateKbps() + "k")
                         .collect(Collectors.joining(", ")),
-                profile.posterWidth(),
-                profile.mp4Width(),
-                profile.mp4BitrateKbps());
+                profile.posterWidth());
 
     }
 }

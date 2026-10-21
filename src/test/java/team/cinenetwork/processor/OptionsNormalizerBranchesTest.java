@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Покрытие веток нормализатора: дополнение/обрезка списков, множитель битрейта,
@@ -98,14 +99,16 @@ class OptionsNormalizerBranchesTest {
     }
 
     @Test
-    void emptyLadderFallsBackToDefaultMp4Bitrate() {
+    void emptyLadderProducesEmptyPlan() {
 
         AppOptions options = base();
         options.setVideoWidths(List.of());
 
         EncodingProfile profile = new OptionsNormalizer().normalizeEncodingOptions(options, videoInfo(8000));
 
-        assertEquals(3000, profile.mp4BitrateKbps());  // фолбэк при пустой лестнице
+        // лестницы нет: вариантов ноль, ширина постера — предел --poster-max-width
+        assertTrue(profile.variants().isEmpty());
+        assertEquals(options.getPosterMaxWidth(), profile.posterWidth());
 
     }
 
