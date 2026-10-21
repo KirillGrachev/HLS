@@ -35,6 +35,11 @@ import java.util.Optional;
  * <p>Плейлист ссылается ровно на те папки, что создал планировщик рендишенов
  * ({@code AudioRenditions}/{@code SubtitleRenditions}) — URI и содержимое диска
  * гарантированно совпадают.
+ *
+ * <p>Результат — {@code Optional}: пустой, когда мастер-плейлист не имеет смысла
+ * (audio-only, нет видеопотока, лестница не дала ни одного играбельного варианта).
+ * Решение «не строить» принимает только этот класс; {@code PlaylistGenerator}
+ * лишь транслирует его в пропуск записи.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -47,19 +52,16 @@ public class MasterPlaylistBuilder {
     private final VideoInfo videoInfo;
     private final EncodingProfile profile;
 
-    public @NotNull String build() {
+    public @NotNull Optional<String> build() {
 
         if (options.isAudioOnly() || videoInfo.getVideoStream() == null) {
-            return "";
+            return Optional.empty();
         }
 
         List<AudioRendition> audioRenditions = resolveAudioRenditions();
         List<SubtitleRendition> subtitleRenditions = resolveSubtitleRenditions();
 
         StringBuilder content = new StringBuilder("#EXTM3U\n#EXT-X-VERSION:5\n");
-
-        List<AudioRendition> resolvedAudio = audioRenditions;
-        List<SubtitleRendition> resolvedSubs = subtitleRenditions;
 
         // Сегменты режутся по ключевым кадрам (-force_key_frames в команде
         // кодирования), то есть каждый сегмент декодируется независимо. Без этого
@@ -68,22 +70,31 @@ public class MasterPlaylistBuilder {
         // перебуферизации.
         content.append("#EXT-X-INDEPENDENT-SEGMENTS\n");
 
-        int defaultAudioIndex = resolveDefaultIndex(resolvedAudio,
+        int defaultAudioIndex = resolveDefaultIndex(audioRenditions,
                 options.getAudioDefaultLanguage(),
                 rendition -> rendition.stream().getLanguage(),
                 "audio");
-        int defaultSubtitleIndex = resolveDefaultIndex(resolvedSubs,
+        int defaultSubtitleIndex = resolveDefaultIndex(subtitleRenditions,
                 options.getSubsDefaultLanguage(),
                 rendition -> rendition.stream().getLanguage(),
                 "subtitles");
 
-        appendAudioMediaEntries(content, resolvedAudio, defaultAudioIndex);
-        appendSubtitleMediaEntries(content, resolvedSubs, defaultSubtitleIndex);
-        appendVariantEntries(content,
-                !resolvedAudio.isEmpty(),
-                !resolvedSubs.isEmpty());
+        appendAudioMediaEntries(content, audioRenditions, defaultAudioIndex);
+        appendSubtitleMediaEntries(content, subtitleRenditions, defaultSubtitleIndex);
 
-        return content.toString();
+        int variantCount = appendVariantEntries(content,
+                !audioRenditions.isEmpty(),
+                !subtitleRenditions.isEmpty());
+
+        // Плейлист без единого видео-варианта невалиден: плееру нечего играть.
+        // Раньше в таком случае на диск всё равно уходила «шапка» (#EXTM3U + версия),
+        // и битый файл выглядел как успешный результат.
+        if (variantCount == 0) {
+            log.warn("Master playlist would contain no video variants; skipping it");
+            return Optional.empty();
+        }
+
+        return Optional.of(content.toString());
 
     }
 
@@ -176,9 +187,11 @@ public class MasterPlaylistBuilder {
 
     /* ---------- Видео-варианты ---------- */
 
-    private void appendVariantEntries(StringBuilder content,
-                                      boolean hasAudioGroup,
-                                      boolean hasSubtitleGroup) {
+    private int appendVariantEntries(StringBuilder content,
+                                     boolean hasAudioGroup,
+                                     boolean hasSubtitleGroup) {
+
+        int appended = 0;
 
         for (EncodingProfile.Variant variant : profile.variants()) {
 
@@ -194,11 +207,22 @@ public class MasterPlaylistBuilder {
 
             content.append(buildVariantLine(variant, hasAudioGroup, hasSubtitleGroup));
             content.append("video/").append(variant.name()).append("/playlist.m3u8\n");
+            appended++;
 
         }
 
+        return appended;
+
     }
 
+    /**
+     * Строка видео-варианта ({@code EXT-X-STREAM-INF}).
+     *
+     * <p>{@code NAME} — нестандартное расширение: RFC 8216 не определяет такой
+     * атрибут для {@code EXT-X-STREAM-INF}, и совместимые плееры обязаны его
+     * игнорировать. Оставлен осознанно: имя ступени («1080p») удобно читать
+     * в сыром плейлисте при отладке раздачи.
+     */
     private @NotNull String buildVariantLine(EncodingProfile.Variant variant,
                                              boolean hasAudioGroup,
                                              boolean hasSubtitleGroup) {

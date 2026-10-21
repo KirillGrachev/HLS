@@ -182,7 +182,7 @@ class MasterPlaylistSpecTest {
 
     private static String build(AppOptions options, VideoInfo videoInfo) {
 
-        return new MasterPlaylistBuilder(options, videoInfo, singleVariantProfile()).build();
+        return new MasterPlaylistBuilder(options, videoInfo, singleVariantProfile()).build().orElseThrow();
 
     }
 

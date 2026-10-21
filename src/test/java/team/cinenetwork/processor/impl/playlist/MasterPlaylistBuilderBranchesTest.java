@@ -31,7 +31,7 @@ class MasterPlaylistBuilderBranchesTest {
         AppOptions options = options();
         options.setNoAudio(true);
 
-        String master = new MasterPlaylistBuilder(options, info(), profile("1080p")).build();
+        String master = new MasterPlaylistBuilder(options, info(), profile("1080p")).build().orElseThrow();
 
         assertFalse(master.contains("TYPE=AUDIO"));
         assertFalse(master.contains("AUDIO=\"audio\""));
@@ -45,7 +45,7 @@ class MasterPlaylistBuilderBranchesTest {
         AppOptions options = options();
         options.setAudioDefaultLanguage("rus");
 
-        String master = new MasterPlaylistBuilder(options, info(), profile("1080p")).build();
+        String master = new MasterPlaylistBuilder(options, info(), profile("1080p")).build().orElseThrow();
 
         String rusLine = lineContaining(master, "LANGUAGE=\"rus\"");
         String jpnLine = lineContaining(master, "LANGUAGE=\"jpn\"");
@@ -60,7 +60,7 @@ class MasterPlaylistBuilderBranchesTest {
         AppOptions options = options();
         options.setSubsDefaultLanguage("rus");
 
-        String master = new MasterPlaylistBuilder(options, infoWithForcedSubs(), profile("1080p")).build();
+        String master = new MasterPlaylistBuilder(options, infoWithForcedSubs(), profile("1080p")).build().orElseThrow();
 
         String rusLine = master.lines()
                 .filter(l -> l.contains("TYPE=SUBTITLES") && l.contains("LANGUAGE=\"rus\""))
@@ -78,10 +78,24 @@ class MasterPlaylistBuilderBranchesTest {
                 new EncodingProfile.Variant(1280, 5000, "libx264", "high@5.1", "slow", "720p")
         ), 1920, 1920, 12000);
 
-        String master = new MasterPlaylistBuilder(options(), info(), profile).build();
+        String master = new MasterPlaylistBuilder(options(), info(), profile).build().orElseThrow();
 
         assertFalse(master.contains("video/1080p/playlist.m3u8"));
         assertTrue(master.contains("video/720p/playlist.m3u8"));
+
+    }
+
+    @Test
+    void allVariantsDegenerateYieldsNoPlaylist() {
+
+        // Если играбельных вариантов не осталось, «шапка» без EXT-X-STREAM-INF
+        // на диск не пишется: пустой Optional вместо битого файла.
+        EncodingProfile profile = new EncodingProfile(List.of(
+                new EncodingProfile.Variant(1920, 0, "libx264", "high@5.2", "slow", "1080p"),
+                new EncodingProfile.Variant(1280, -5, "libx264", "high@5.1", "slow", "720p")
+        ), 1920, 1920, 12000);
+
+        assertTrue(new MasterPlaylistBuilder(options(), info(), profile).build().isEmpty());
 
     }
 
@@ -103,7 +117,7 @@ class MasterPlaylistBuilderBranchesTest {
     @Test
     void quotesInVariantNamesAreEscaped() {
 
-        String master = new MasterPlaylistBuilder(options(), info(), profile("1080\"p")).build();
+        String master = new MasterPlaylistBuilder(options(), info(), profile("1080\"p")).build().orElseThrow();
 
         assertTrue(master.contains("NAME=\"1080'p\""));
 

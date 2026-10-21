@@ -41,12 +41,14 @@ public class SubtitlePlaylistWriter {
         double safeDuration = Math.max(1.0, durationSeconds);
         int targetDuration = (int) Math.ceil(safeDuration);
 
+        // \n, а не %n: плейлист — текстовый протокол HLS, переводы строк в нём
+        // фиксированы спецификацией и не должны зависеть от ОС сборки.
         String content = "#EXTM3U\n"
                 + "#EXT-X-TARGETDURATION:" + targetDuration + "\n"
                 + "#EXT-X-VERSION:3\n"
                 + "#EXT-X-PLAYLIST-TYPE:VOD\n"
                 + "#EXT-X-MEDIA-SEQUENCE:0\n"
-                + String.format(Locale.ROOT, "#EXTINF:%.3f,%n", safeDuration)
+                + String.format(Locale.ROOT, "#EXTINF:%.3f,\n", safeDuration)
                 + rendition.vttFile().getFileName() + "\n"
                 + "#EXT-X-ENDLIST\n";
 

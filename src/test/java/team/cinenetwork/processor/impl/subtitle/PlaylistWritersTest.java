@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -23,16 +23,17 @@ class PlaylistWritersTest {
     Path tempDir;
 
     @Test
-    void playlistWriterCreatesFoldersAndSkipsEmpty() throws IOException {
+    void playlistWriterCreatesFoldersAndOverwrites() throws IOException {
 
         PlaylistWriter writer = new PlaylistWriter();
         Path target = tempDir.resolve("a/b/playlist.m3u8");
 
-        writer.write("", target);
-        assertFalse(Files.exists(target));  // пустое содержимое не пишем
-
         writer.write("#EXTM3U\n", target);
         assertTrue(Files.readString(target).startsWith("#EXTM3U"));
+
+        // повторная запись заменяет содержимое целиком (TRUNCATE_EXISTING)
+        writer.write("#EXTM3U\n#EXT-X-VERSION:5\n", target);
+        assertEquals("#EXTM3U\n#EXT-X-VERSION:5\n", Files.readString(target));
 
     }
 

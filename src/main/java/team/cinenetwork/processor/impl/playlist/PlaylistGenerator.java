@@ -9,6 +9,7 @@ import team.cinenetwork.processor.impl.artifact.ArtifactGenerator;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * Мастер-плейлист: итоговый артефакт, связывающий все рендишены
@@ -42,20 +43,30 @@ public class PlaylistGenerator implements ArtifactGenerator {
     @Override
     public void generate() throws IOException {
 
-        String content = builder.build();
+        Optional<String> content = builder.build();
+
         if (content.isEmpty()) {
-            log.debug("Skipping master playlist - no video variants to include");
+            log.warn("Skipping master playlist: builder produced no playable content");
             return;
         }
 
         Path playlistPath = options.getOutput().resolve(options.getHlsMasterPlaylist());
-        writer.write(content, playlistPath);
+        writer.write(content.get(), playlistPath);
 
     }
 
+    /**
+     * Мастер-плейлист имеет смысл, только если HLS-лестница вообще генерируется:
+     * при {@code --hls-disable} видео-плейлистов на диске не будет, и мастер
+     * ссылался бы в пустоту; в audio-only режиме лестницы нет по определению.
+     */
     @Override
     public boolean isEnabled() {
-        return !options.isPlaylistDisable();
+
+        return !options.isPlaylistDisable()
+                && !options.isHlsDisable()
+                && !options.isAudioOnly();
+
     }
 
     @Override

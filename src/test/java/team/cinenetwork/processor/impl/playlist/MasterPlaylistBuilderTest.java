@@ -11,6 +11,7 @@ import team.cinenetwork.processor.EncodingProfile;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +29,7 @@ class MasterPlaylistBuilderTest {
         VideoInfo videoInfo = animeVideoInfo();
         EncodingProfile profile = singleVariantProfile();
 
-        String master = new MasterPlaylistBuilder(options, videoInfo, profile).build();
+        String master = new MasterPlaylistBuilder(options, videoInfo, profile).build().orElseThrow();
 
         // Аудио-рендишены: обе озвучки, первая — DEFAULT
         assertTrue(master.contains("#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audio\""));
@@ -62,7 +63,7 @@ class MasterPlaylistBuilderTest {
         AppOptions options = baseOptions();
         options.setAudioOnly(true);
 
-        String master = new MasterPlaylistBuilder(options, animeVideoInfo(),
+        Optional<String> master = new MasterPlaylistBuilder(options, animeVideoInfo(),
                 singleVariantProfile()).build();
 
         assertTrue(master.isEmpty());
@@ -76,7 +77,7 @@ class MasterPlaylistBuilderTest {
         options.setSubsEnabled(false);
 
         String master = new MasterPlaylistBuilder(options, animeVideoInfo(),
-                singleVariantProfile()).build();
+                singleVariantProfile()).build().orElseThrow();
 
         assertFalse(master.contains("TYPE=SUBTITLES"));
         assertFalse(master.contains("SUBTITLES=\"subtitles\""));

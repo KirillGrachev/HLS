@@ -9,6 +9,7 @@ import team.cinenetwork.model.VideoInfo;
 import team.cinenetwork.model.VideoStream;
 import team.cinenetwork.options.AppOptions;
 import team.cinenetwork.processor.EncodingProfile;
+import team.cinenetwork.processor.impl.playlist.PlaylistGenerator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,6 +58,17 @@ class ArtifactGeneratorsTest {
         assertFalse(only.get(1).isEnabled());
         assertFalse(only.get(2).isEnabled());
         assertFalse(only.get(3).isEnabled());
+        assertFalse(only.get(4).isEnabled());  // мастер-плейлист без лестницы не имеет смысла
+
+        // hls-disable: видео-плейлистов не будет, мастер ссылался бы в пустоту
+        AppOptions noHls = options();
+        noHls.setHlsDisable(true);
+        var noHlsGens = generators(noHls, fullInfo());
+        assertFalse(noHlsGens.get(1).isEnabled());
+        assertFalse(noHlsGens.get(4).isEnabled());
+
+        // исходник без видеопотока: видео-лестница не строится
+        assertFalse(generators(options(), noVideoInfo()).get(1).isEnabled());
 
         // исходник без субтитров: генератор субтитров молчит
         assertFalse(generators(options(), noSubsInfo()).get(3).isEnabled());
@@ -125,7 +137,24 @@ class ArtifactGeneratorsTest {
 
         generators(options, fullInfo()).get(4).generate();
 
-        // в audio-only мастер не строится: контента нет, писатель пропускает пустоту
+        // в audio-only мастер не строится: билдер вернул пустой Optional
+        assertFalse(Files.exists(tempDir.resolve("master.m3u8")));
+
+    }
+
+    @Test
+    void playlistGeneratorSkipsWhenNoPlayableVariants() throws IOException {
+
+        AppOptions options = options();
+        options.setFfmpeg("/bin/true");
+
+        EncodingProfile degenerate = new EncodingProfile(List.of(
+                new EncodingProfile.Variant(1920, 0, "libx264", "high@5.2", "slow", "1080p")
+        ), 1920, 1920, 12000);
+
+        new PlaylistGenerator(options, fullInfo(), degenerate).generate();
+
+        // все ступени вырождены: на диск не уходит даже «шапка» #EXTM3U
         assertFalse(Files.exists(tempDir.resolve("master.m3u8")));
 
     }
@@ -201,6 +230,21 @@ class ArtifactGeneratorsTest {
                 "codec_type", "video", "index", 0,
                 "width", 1920, "height", 1080, "r_frame_rate", "24/1"));
         info.setVideoStream(video);
+        return info;
+
+    }
+
+    private VideoInfo noVideoInfo() {
+
+        VideoInfo info = new VideoInfo();
+
+        AudioStream audio = new AudioStream();
+        audio.populateFromProbeData(Map.of(
+                "codec_type", "audio", "index", 0, "channels", 2,
+                "tags", Map.of("language", "jpn")));
+        info.getAudioStreams().add(audio);
+        info.setAudioStream(audio);
+
         return info;
 
     }

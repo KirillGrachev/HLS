@@ -14,6 +14,12 @@ import java.nio.file.StandardOpenOption;
  *
  * <p>Общий для мастер-плейлиста и плейлистов субтитров: единственное место,
  * отвечающее за «положить строку в файл, создав папки».
+ *
+ * <p>Писатель пишет полученное содержимое как есть и не трактует пустую строку
+ * как «пропустить»: решение «писать или нет» принимает вызывающий (билдеры
+ * возвращают {@code Optional}). Прежний sentinel «пустое содержимое = пропуск»
+ * дублировал проверку в двух слоях и маскировал ошибку: случайно опустошённый
+ * контент молча не доезжал до диска.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -22,11 +28,6 @@ public class PlaylistWriter {
     public void write(@NotNull String content,
                       @NotNull Path outputPath)
             throws IOException {
-
-        if (content.isEmpty()) {
-            log.debug("Skipping playlist write - empty content");
-            return;
-        }
 
         Files.createDirectories(outputPath.getParent());
         Files.writeString(outputPath, content,
