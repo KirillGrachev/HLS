@@ -1,0 +1,120 @@
+<!-- Source of docs/images/hls-banner.png. Render: headless Chromium (Playwright),
+     viewport 1600x900, deviceScaleFactor 1, single-viewport screenshot.
+     Tooling lives in /root/work/tools/html2png/ on the build host. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1600px; height:900px; overflow:hidden; background:#000; }
+  body { font-family:"Inter","DejaVu Sans",sans-serif; color:#cecece; -webkit-font-smoothing:antialiased; position:relative; }
+  .mono { font-family:"JetBrains Mono","DejaVu Sans Mono",monospace; font-variant-ligatures:none; }
+  .card { position:absolute; background:#0d0d0d; border:1px solid #232323; border-radius:18px;
+          box-shadow:0 24px 60px rgba(0,0,0,.55); }
+  .chead { display:flex; align-items:center; gap:10px; padding:20px 26px; border-bottom:1px solid #1c1c1c;
+           font-family:"JetBrains Mono",monospace; font-size:15px; color:#8a8a8a; }
+  .chead .ic { width:22px; height:22px; stroke:#e8e8e8; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .dots { display:flex; gap:7px; margin-right:8px; }
+  .dots i { width:11px; height:11px; border-radius:50%; display:block; }
+  .right { margin-left:auto; }
+  pre { font-family:"JetBrains Mono",monospace; font-variant-ligatures:none; padding:20px 26px 24px; }
+  .k{color:#c678dd} .t{color:#e5c07b} .f{color:#61afef} .s{color:#98c379} .n{color:#d19a66}
+  .c{color:#5c6370} .pu{color:#8b8b8b} .pl{color:#d4d4d4}
+  /* left column */
+  .brand { position:absolute; left:100px; top:78px; display:flex; gap:20px; align-items:center; }
+  .logo { width:58px; height:58px; border-radius:16px; background:#141414; border:1px solid #262626;
+          display:flex; align-items:center; justify-content:center; }
+  .logo svg { width:26px; height:26px; }
+  .bname { font-size:26px; font-weight:700; color:#f2f2f2; letter-spacing:-0.01em; }
+  .bsub { margin-top:5px; font-family:"JetBrains Mono",monospace; font-size:14.5px; color:#8a8a8a; }
+  h1 { position:absolute; left:98px; top:196px; font-size:86px; line-height:1.08; font-weight:800;
+       color:#fff; letter-spacing:-0.03em; }
+  h1 .dim { color:#7d7d7d; }
+  .lead { position:absolute; left:100px; top:600px; width:548px; font-size:19px; line-height:1.66; color:#9a9a9a; }
+  .lead b { color:#f2f2f2; font-weight:600; }
+  /* collage */
+  .ffprobe { left:1002px; top:26px; width:484px; transform:rotate(2.6deg); z-index:1; }
+  .ffprobe pre { font-size:16px; line-height:1.95; }
+  .vp { left:698px; top:150px; width:704px; transform:rotate(-1.2deg); z-index:2; }
+  .vp pre { font-size:18px; line-height:1.95; }
+  .chips { left:1328px; top:232px; width:254px; transform:rotate(2.2deg); z-index:3; padding:26px 24px 30px; }
+  .layertile { width:76px; height:76px; border-radius:20px; background:#141414; border:1px solid #262626;
+               display:flex; align-items:center; justify-content:center; margin-bottom:34px; }
+  .layertile svg { width:36px; height:36px; stroke:#e8e8e8; fill:none; stroke-width:1.8; stroke-linejoin:round; }
+  .chip { display:flex; align-items:center; gap:12px; background:#141414; border:1px solid #262626;
+          border-radius:12px; padding:14px 16px; font-family:"JetBrains Mono",monospace; font-size:15px; color:#d4d4d4; }
+  .chip + .chip { margin-top:18px; }
+  .chip svg { width:22px; height:22px; flex:0 0 auto; }
+  .logcard { left:628px; top:462px; width:604px; transform:rotate(-0.6deg); z-index:2; }
+  .logcard pre { font-size:15.5px; line-height:2.0; }
+  .ts{color:#6c6c6c} .th{color:#61afef} .lv{color:#9a9a9a} .lg{color:#8a8a8a} .msg{color:#c8c8c8}
+  .bash { left:842px; top:600px; width:696px; transform:rotate(1.1deg); z-index:3; }
+  .bash pre { font-size:17px; line-height:2.0; }
+  .pmt{color:#98c379} .fl{color:#61afef}
+</style>
+</head>
+<body>
+
+  <div class="brand">
+    <div class="logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2" stroke="#e8e8e8" stroke-width="1.8" fill="none"/><polygon points="10,8 16.4,12 10,16" fill="#e8e8e8"/></svg></div>
+    <div>
+      <div class="bname">CineNetwork</div>
+      <div class="bsub">team.cinenetwork.ffmpeg</div>
+    </div>
+  </div>
+
+  <h1>Adaptive<br>HLS<br><span class="dim">Orchestrator.</span></h1>
+
+  <div class="lead">A highly-decoupled Java 21 engine. Parses raw metadata, evaluates FFmpeg strategies, and constructs master playlists within a strictly <b>unified</b> pipeline.</div>
+
+  <div class="card ffprobe">
+    <div class="chead"><svg class="ic" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M10 12c-1.5 1-1.5 3 0 4M14 12c1.5 1 1.5 3 0 4"/></svg>ffprobe_output.json</div>
+<pre><span class="pu">{</span>
+  <span class="f">"streams"</span><span class="pu">:</span> <span class="pu">[</span>
+    <span class="pu">{</span> <span class="f">"codec_type"</span><span class="pu">:</span> <span class="s">"video"</span><span class="pu">,</span>
+      <span class="f">"width"</span><span class="pu">:</span> <span class="n">3840</span><span class="pu">,</span> <span class="f">"height"</span><span class="pu">:</span> <span class="n">2160</span> <span class="pu">},</span></pre>
+  </div>
+
+  <div class="card vp">
+    <div class="chead"><span class="dots"><i style="background:#ff5f56"></i><i style="background:#ffbd2e"></i><i style="background:#27c93f"></i></span><span class="right">VideoProcessor.java</span></div>
+<pre><span class="k">public void</span> <span class="f">process</span><span class="pu">()</span> <span class="k">throws</span> <span class="t">ProcessingException</span> <span class="pu">{</span>
+    <span class="k">try</span> <span class="pu">{</span>
+        <span class="f">prepareOutputDirectory</span><span class="pu">();</span>
+
+        <span class="t">VideoInfo</span> videoInfo <span class="pu">=</span> <span class="f">probeVideoMetadata</span><span class="pu">();</span>
+
+        <span class="f">validateMediaStreams</span><span class="pu">(</span>videoInfo<span class="pu">);</span>
+        <span class="t">EncodingProfile</span> profile <span class="pu">=</span>
+                <span class="f">normalizeProcessingOptions</span><span class="pu">(</span>videoInfo<span class="pu">);</span>
+        ffmpegExecutor<span class="pu">.</span><span class="f">executeMediaProcessing</span><span class="pu">(</span>
+                <span class="t">ProcessingType</span><span class="pu">.</span>SINGLE_FILE<span class="pu">);</span></pre>
+  </div>
+
+  <div class="card chips">
+    <div class="layertile"><svg viewBox="0 0 24 24"><path d="M12 2 22 8l-10 6L2 8z"/><path d="M2 12l10 6 10-6"/><path d="M2 16l10 6 10-6"/></svg></div>
+    <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#61afef" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15l-5-5L5 20"/></svg>preview.jpg</div>
+    <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#e5c07b" stroke-width="1.8"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>master.m3u8</div>
+  </div>
+
+  <div class="card logcard">
+    <div class="chead"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6h5"/></svg>SLF4J EXECUTION LOG</div>
+<pre><span class="ts">10:24:16.104</span> <span class="th">[main]</span> <span class="lv">INFO</span>  <span class="lg">t.c.p.VideoProcessor</span> <span class="pu">-</span>
+        <span class="msg">Source probed: video=yes, audio track(s)=2</span>
+<span class="ts">10:24:17.001</span> <span class="th">[main]</span> <span class="lv">INFO</span>  <span class="lg">t.c.p.VideoProcessor</span> <span class="pu">-</span>
+        <span class="msg">Generating HLS streams...</span>
+<span class="ts">10:24:28.400</span> <span class="th">[main]</span> <span class="lv">INFO</span>  <span class="lg">team.cinenetwork.Main</span> <span class="pu">-</span>
+        <span class="msg">Video processing completed successfully</span></pre>
+  </div>
+
+  <div class="card bash">
+    <div class="chead"><span class="dots"><i style="background:#ff5f56"></i><i style="background:#ffbd2e"></i><i style="background:#27c93f"></i></span>bash &mdash; cinenetwork-hls</div>
+<pre><span class="pmt">$</span> java <span class="pu">-</span>jar <span class="pl">HLS-1.0.0.jar</span> <span class="pu">\</span>
+  <span class="fl">--input</span> <span class="s">source.mp4</span> <span class="pu">\</span>
+  <span class="fl">--output</span> <span class="s">/var/www/hls</span> <span class="pu">\</span>
+  <span class="fl">--video-widths</span> <span class="n">1920,1280,854</span> <span class="pu">\</span>
+  <span class="fl">--hls-time</span> <span class="n">6</span> <span class="fl">--poster-enabled</span> <span class="k">true</span></pre>
+  </div>
+
+</body>
+</html>
