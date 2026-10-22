@@ -58,6 +58,11 @@ class VideoProcessorE2ETest {
         assertTrue(Files.readString(out.resolve("subtitles/rus/playlist.m3u8"))
                 .contains("subtitles.vtt"));
 
+        // аудио-рендишены: фейковый ffmpeg пишет плейлист только в существующий каталог,
+        // поэтому эти файлы доказывают, что стратегия создала каталоги до кодирования
+        assertTrue(Files.exists(out.resolve("audio/jpn/playlist.m3u8")));
+        assertTrue(Files.exists(out.resolve("audio/rus/playlist.m3u8")));
+
         // в командах «ffmpeg» реально была конвертация субтитров
         String ffmpegLog = Files.readString(tempDir.resolve("ffmpeg.log"));
         assertTrue(ffmpegLog.contains("-c:s webvtt"));
@@ -99,7 +104,12 @@ class VideoProcessorE2ETest {
 
     }
 
-    /** Пишет исполняемые заглушки ffprobe/ffmpeg; ffmpeg логирует аргументы и создаёт .vtt. */
+    /**
+     * Пишет исполняемые заглушки ffprobe/ffmpeg. Как и настоящий ffmpeg, заглушка
+     * <b>не создаёт каталоги</b>: если родительский путь сегментов/плейлиста/файла
+     * не существует — немедленный отказ с exit 254. Это ловит стратегии, которые
+     * забыли подготовить свой выходной каталог (реальный FFmpeg на них падает).
+     */
     private Path writeFakeBinaries() throws IOException {
 
         Path bin = tempDir.resolve("bin");
@@ -113,10 +123,19 @@ class VideoProcessorE2ETest {
         Files.writeString(ffmpeg, """
                 #!/bin/sh
                 echo "$@" >> %s
+                fail() { echo "Failed to open file '$1'" >&2; exit 254; }
+                prev=""
                 for a in "$@"; do
+                  if [ "$prev" = "-hls_segment_filename" ]; then
+                    [ -d "$(dirname "$a")" ] || fail "$a"
+                  fi
                   case "$a" in
-                    *.vtt) mkdir -p "$(dirname "$a")"; echo WEBVTT > "$a";;
+                    *.vtt)  [ -d "$(dirname "$a")" ] || fail "$a"; echo WEBVTT > "$a";;
+                    *.m3u8) [ -d "$(dirname "$a")" ] || fail "$a"; : > "$a";;
+                    *.mp4)  [ -d "$(dirname "$a")" ] || fail "$a"; : > "$a";;
+                    *.jpg)  [ -d "$(dirname "$a")" ] || fail "$a"; : > "$a";;
                   esac
+                  prev="$a"
                 done
                 exit 0
                 """.formatted(log));

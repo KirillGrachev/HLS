@@ -33,6 +33,11 @@ public class AudioRenditionStrategy extends AbstractFFmpegStrategy {
     @Override
     public @NotNull List<String> build() {
 
+        // Реальный FFmpeg не создаёт каталоги сам: без этого вызова запись сегментов
+        // в <out>/audio/<язык>/ падает с «No such file or directory» (exit 254).
+        // Остальные стратегии создают свой каталог так же, до сборки аргументов.
+        ensureDirectory(rendition.directory());
+
         List<String> args = new ArrayList<>(inputArgs());
 
         // -vn: видео в аудио-рендишене не нужно
