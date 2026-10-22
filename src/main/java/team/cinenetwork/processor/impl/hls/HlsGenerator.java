@@ -11,6 +11,9 @@ import java.io.IOException;
 
 /**
  * HLS-«лестница» видео-вариантов: video/1080p, video/720p, ...
+ *
+ * <p>В режиме {@code --audio-only} этот же этап (TRANSCODE) несёт одну команду
+ * {@code AudioOnlyStrategy} — самостоятельный аудио-плейлист в корне вывода.
  */
 @RequiredArgsConstructor
 public class HlsGenerator implements ArtifactGenerator {
@@ -27,14 +30,16 @@ public class HlsGenerator implements ArtifactGenerator {
     @Override
     public boolean isEnabled() {
 
+        // audio-only не отключает этап, а меняет его наполнение: координатор вместо
+        // видео-лестницы собирает команду AudioOnlyStrategy. Раньше режим исключался
+        // здесь, и --audio-only молча не генерировал ничего (exit 0, пустой вывод).
         return !options.isHlsDisable()
-                && !options.isAudioOnly()
-                && videoInfo.getVideoStream() != null;
+                && (options.isAudioOnly() || videoInfo.getVideoStream() != null);
 
     }
 
     @Override
     public String name() {
-        return "HLS video variants";
+        return "HLS streams";
     }
 }

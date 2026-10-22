@@ -119,17 +119,27 @@ public class VideoProcessor {
 
     }
 
-    /** Проверяет минимум потоков: видео обязательно, для audio-only — ещё и аудио. */
+    /**
+     * Проверяет минимум потоков. Для audio-only нужно только аудио: видео не требуется —
+     * режим рассчитан в том числе на источники без видеодорожки (подкасты, OST-сборники).
+     * Остальным режимам видео обязательно.
+     */
     private void validateMediaStreams(@NotNull VideoInfo videoInfo) {
+
+        if (options.isAudioOnly()) {
+
+            if (videoInfo.getAudioStream() == null) {
+                throw ProcessingException.of(ErrorCode.AUDIO_ONLY,
+                        "Audio-only mode requires audio stream");
+            }
+
+            return;
+
+        }
 
         if (videoInfo.getVideoStream() == null) {
             throw ProcessingException.of(ErrorCode.NO_VIDEO_STREAM,
                     "Source contains no video stream");
-        }
-
-        if (options.isAudioOnly() && videoInfo.getAudioStream() == null) {
-            throw ProcessingException.of(ErrorCode.AUDIO_ONLY,
-                    "Audio-only mode requires audio stream");
         }
 
     }

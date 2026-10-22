@@ -50,12 +50,14 @@ class ArtifactGeneratorsTest {
         noAudio.setNoAudio(true);
         assertFalse(generators(noAudio, fullInfo()).get(2).isEnabled());
 
-        // audio-only: постер/видео/аудио-рендишены/субтитлы не нужны
+        // audio-only: постер/аудио-рендишены/субтитры не нужны; этап HLS-потоков
+        // остаётся включённым — координатор несёт в нём команду AudioOnlyStrategy
+        // (самостоятельный аудио-плейлист в корне вывода)
         AppOptions audioOnly = options();
         audioOnly.setAudioOnly(true);
         var only = generators(audioOnly, fullInfo());
         assertFalse(only.getFirst().isEnabled());
-        assertFalse(only.get(1).isEnabled());
+        assertTrue(only.get(1).isEnabled());   // HLS-потоки: аудио-плейлист
         assertFalse(only.get(2).isEnabled());
         assertFalse(only.get(3).isEnabled());
         assertFalse(only.get(4).isEnabled());  // мастер-плейлист без лестницы не имеет смысла

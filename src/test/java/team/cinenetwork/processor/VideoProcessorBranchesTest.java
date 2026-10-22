@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Покрытие веток процессора: оборачивание неожиданных IO-ошибок, источник без видео,
- * audio-only без аудио, пропуск выключенных генераторов.
+ * audio-only без аудио и без видео, пропуск выключенных генераторов.
  */
 class VideoProcessorBranchesTest {
 
@@ -116,11 +116,24 @@ class VideoProcessorBranchesTest {
         AppOptions options = options(FULL_PROBE);
         options.setAudioOnly(true);
 
-        // аудио в источнике есть — валидация пропускает запуск;
-        // лестница и мастер-плейлист в audio-only режиме не строятся
+        // аудио в источнике есть — валидация пропускает запуск; мастер-плейлист
+        // в audio-only режиме не строится, а самостоятельный аудио-плейлист пишет
+        // FFmpeg — его наличие доказывает VideoProcessorE2ETest
         VideoProcessor.create(options).process();
 
         assertFalse(Files.exists(options.getOutput().resolve("master.m3u8")));
+
+    }
+
+    @Test
+    void audioOnlyWithoutVideoPassesValidation() throws IOException {
+
+        // подкаст/OST: источнику без видеопотока audio-only режим не отказывает —
+        // видео для аудио-плейлиста не нужно (регрессия NO_VIDEO_STREAM)
+        AppOptions options = options(AUDIO_ONLY_PROBE);
+        options.setAudioOnly(true);
+
+        VideoProcessor.create(options).process();
 
     }
 

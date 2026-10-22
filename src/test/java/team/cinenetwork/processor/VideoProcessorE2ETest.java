@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -84,6 +85,26 @@ class VideoProcessorE2ETest {
 
         String ffmpegLog = Files.readString(tempDir.resolve("ffmpeg.log"));
         assertEquals(2, countOccurrences(ffmpegLog, "-metadata:s:a:0"));  // по команде на озвучку
+
+    }
+
+    @Test
+    void audioOnlyModeWritesStandalonePlaylist() throws IOException {
+
+        Path bin = writeFakeBinaries();
+        Path out = tempDir.resolve("out-audio");
+
+        AppOptions options = hlsOptions(bin, out);
+        options.setAudioOnly(true);
+
+        VideoProcessor.create(options).process();
+
+        // самостоятельный аудио-плейлист в корне вывода; ни мастера, ни видео-лестницы.
+        // Регрессия: раньше HlsGenerator отключался при audioOnly, команда
+        // AudioOnlyStrategy не выполнялась, и режим молча не писал ничего
+        assertTrue(Files.exists(out.resolve("playlist.m3u8")));
+        assertFalse(Files.exists(out.resolve("master.m3u8")));
+        assertFalse(Files.exists(out.resolve("video")));
 
     }
 
