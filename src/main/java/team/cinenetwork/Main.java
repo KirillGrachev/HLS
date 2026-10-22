@@ -59,7 +59,9 @@ public class Main {
 
             log.error("Invalid command line arguments: {}", e.getMessage());
             commandLine.usage(System.out);
+
             System.exit(2);
+
         }
 
         if (commandLine.isUsageHelpRequested()) {

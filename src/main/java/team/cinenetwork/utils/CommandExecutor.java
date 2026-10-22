@@ -167,6 +167,7 @@ public class CommandExecutor {
             }
         }
         return tail;
+
     }
 
     /** Держит в очереди не больше {@link #ERROR_TAIL_LINES} последних строк. */

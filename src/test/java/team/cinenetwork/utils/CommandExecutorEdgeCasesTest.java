@@ -66,6 +66,7 @@ class CommandExecutorEdgeCasesTest {
             ProcessingException e = assertThrows(ProcessingException.class,
                     () -> CommandExecutor.executeAndStreamOutput("sh", List.of("-c", "true")));
             assertEquals(ErrorCode.EXECUTION_INTERRUPTED, e.getCode());
+
         } finally {
             // снимаем флаг, чтобы не задеть остальные тесты
             Thread.interrupted();

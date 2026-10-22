@@ -202,5 +202,6 @@ class AbstractFFmpegStrategyTest {
 
         ProcessingException e = assertThrows(ProcessingException.class, () -> s.resolution(1280));
         assertEquals(ErrorCode.NO_VIDEO_STREAM, e.getCode());
+
     }
 }

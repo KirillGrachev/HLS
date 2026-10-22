@@ -264,9 +264,11 @@ class MasterPlaylistSpecTest {
                 1920);
     }
     private static List<String> mediaLines(String master, String type) {
+
         return master.lines()
                 .filter(line -> line.startsWith("#EXT-X-MEDIA:TYPE=" + type))
                 .toList();
+
     }
 
     private static long countDefaultYes(List<String> lines) {

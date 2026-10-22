@@ -50,7 +50,9 @@ class VideoInfoTest {
 
         VideoInfo info = new VideoInfo();
         info.setFormatDetails(Map.of("duration", "1429.5"));
+
         assertEquals(1429.5, info.getDuration(), 0.001);
+
     }
 
     @Test

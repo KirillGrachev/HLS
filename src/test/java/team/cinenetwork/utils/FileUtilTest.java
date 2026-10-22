@@ -78,5 +78,6 @@ class FileUtilTest {
         ProcessingException e = assertThrows(ProcessingException.class,
                 () -> FileUtil.prepareOutputDirectory(null, true));
         assertTrue(e.getCode() == ErrorCode.NULL_PATH_PROVIDED);
+
     }
 }

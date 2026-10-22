@@ -90,8 +90,10 @@ public class VideoInfo {
             case "video" -> registerVideoStream(streamData);
             case "audio" -> registerAudioStream(streamData);
             case "subtitle" -> registerSubtitleStream(streamData);
+
             default -> log.debug("Ignoring stream of type '{}'", rawType);
         }
+
     }
 
     private void registerVideoStream(Map<String, Object> streamData) {
@@ -100,9 +102,11 @@ public class VideoInfo {
             videoStream = new VideoStream();
             videoStream.populateFromProbeData(streamData);
         }
+
     }
 
     private void registerAudioStream(Map<String, Object> streamData) {
+
         AudioStream audio = new AudioStream();
         audio.populateFromProbeData(streamData);
         audioStreams.add(audio);
@@ -118,6 +122,7 @@ public class VideoInfo {
         SubtitleStream subtitle = new SubtitleStream();
         subtitle.populateFromProbeData(streamData);
         subtitleStreams.add(subtitle);
+
     }
     /**
      * Селекторы.
@@ -151,6 +156,7 @@ public class VideoInfo {
             log.warn("Invalid audio stream selector: '{}'", streamSelector);
             return Optional.empty();
         }
+
     }
 
     /** Длительность воспроизведения: из видеопотока, если известна, иначе из контейнера. */

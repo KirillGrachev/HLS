@@ -111,6 +111,7 @@ public final class ProbeData {
                 .filter(Map.class::isInstance)
                 .map(map -> ProbeData.of((Map<String, Object>) map))
                 .orElse(EMPTY);
+
     }
 
     /** Является ли поток указанным типом ({@code codec_type == "video"/"audio"/"subtitle"}). */
@@ -120,6 +121,7 @@ public final class ProbeData {
                 .map(String::toLowerCase)
                 .map(type::equals)
                 .orElse(false);
+
     }
 
     /** Язык из {@code tags.language}, например "jpn", "rus". */

@@ -209,7 +209,9 @@ class StrategiesTest {
 
         VideoInfo info = videoInfo();
         info.getAudioStreams().clear();  // целевая дорожка в списке источника отсутствует
+
         List<String> args = new SingleFileStrategy(options, info, audio(1, "jpn"), null).build();
+
         // предшествующих одноязычных дорожек нет — суффикс _2 не появляется
         assertTrue(args.stream().anyMatch(a -> a.endsWith("_jpn.mp4")));
     }

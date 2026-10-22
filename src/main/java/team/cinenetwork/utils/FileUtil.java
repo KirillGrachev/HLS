@@ -108,6 +108,7 @@ public class FileUtil {
                 deleteSingleFile(filePath);
             }
         }
+
     }
 
     private void deleteSingleFile(Path filePath) throws IOException {
