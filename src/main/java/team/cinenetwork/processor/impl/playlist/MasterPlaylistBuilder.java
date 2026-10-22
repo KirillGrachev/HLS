@@ -98,7 +98,9 @@ public class MasterPlaylistBuilder {
 
     }
 
-    /* ---------- Группа AUDIO ---------- */
+    /**
+     * Группа AUDIO.
+     */
 
     private @NotNull List<AudioRendition> resolveAudioRenditions() {
 
@@ -143,7 +145,9 @@ public class MasterPlaylistBuilder {
 
     }
 
-    /* ---------- Группа SUBTITLES ---------- */
+    /**
+     * Группа SUBTITLES.
+     */
 
     private @NotNull List<SubtitleRendition> resolveSubtitleRenditions() {
 
@@ -158,11 +162,9 @@ public class MasterPlaylistBuilder {
     private void appendSubtitleMediaEntries(StringBuilder content,
                                             List<SubtitleRendition> renditions,
                                             int defaultIndex) {
-
         for (int i = 0; i < renditions.size(); i++) {
             content.append(buildSubtitleMediaLine(renditions.get(i), i == defaultIndex));
         }
-
     }
 
     private @NotNull String buildSubtitleMediaLine(SubtitleRendition rendition,
@@ -185,7 +187,9 @@ public class MasterPlaylistBuilder {
 
     }
 
-    /* ---------- Видео-варианты ---------- */
+    /**
+     * Видео-варианты.
+     */
 
     private int appendVariantEntries(StringBuilder content,
                                      boolean hasAudioGroup,
@@ -260,14 +264,12 @@ public class MasterPlaylistBuilder {
      */
     private long calculateBandwidthBits(EncodingProfile.Variant variant,
                                         boolean hasAudioGroup) {
-
         long totalKbps = variant.bitrateKbps() + (hasAudioGroup ? options.getAudioBitrate() : 0);
-
         return totalKbps * 1000L;
-
     }
-
-    /* ---------- Вспомогательные ---------- */
+    /**
+     * Вспомогательные.
+     */
 
     /**
      * Определяет единственный рендишен группы, который помечается DEFAULT=YES.
@@ -335,8 +337,6 @@ public class MasterPlaylistBuilder {
      * @return значение, пригодное для подстановки в кавычки атрибута
      */
     private @NotNull String quoted(String value) {
-
         return value == null ? "" : value.replace('"', '\'');
-
     }
 }

@@ -85,7 +85,9 @@ class FFmpegCommandCoordinatorTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions defaultOptions() {
 

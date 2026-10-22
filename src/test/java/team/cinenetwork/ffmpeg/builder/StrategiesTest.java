@@ -172,12 +172,9 @@ class StrategiesTest {
 
     @Test
     void singleFileBlankCustomNameFallsBackToInputName() {
-
         // пустое кастомное имя — как если бы его не передали: база из имени исходника
         List<String> args = new SingleFileStrategy(options, videoInfo(), audio(1, "jpn"), "   ").build();
-
         assertTrue(args.stream().anyMatch(a -> a.equals("/tmp/out/source_jpn.mp4")));
-
     }
 
     @Test
@@ -212,15 +209,13 @@ class StrategiesTest {
 
         VideoInfo info = videoInfo();
         info.getAudioStreams().clear();  // целевая дорожка в списке источника отсутствует
-
         List<String> args = new SingleFileStrategy(options, info, audio(1, "jpn"), null).build();
-
         // предшествующих одноязычных дорожек нет — суффикс _2 не появляется
         assertTrue(args.stream().anyMatch(a -> a.endsWith("_jpn.mp4")));
-
     }
-
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions options() {
 

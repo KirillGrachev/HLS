@@ -18,25 +18,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ModelBranchesTest {
 
-    /* ---------- ProbeData ---------- */
+    /**
+     * ProbeData.
+     */
 
     @Test
     void probeDataEmptyWrapperAndBlankText() {
-
         assertTrue(ProbeData.empty().value("any").isEmpty());
         assertTrue(ProbeData.of(Map.of("blank", "   ")).text("blank").isEmpty());
-
     }
 
     @Test
     void probeDataDecimalFromNumberAndGarbage() {
-
         assertEquals(23.5, ProbeData.of(Map.of("num", 23.5)).decimal("num").orElseThrow(), 0.001);
         assertTrue(ProbeData.of(Map.of("bad", "abc")).decimal("bad").isEmpty());
-
     }
-
-    /* ---------- VideoStream ---------- */
+    /**
+     * VideoStream.
+     */
 
     @Test
     void bitrateTagsScanSkipsUnrelatedKeysAndWarnsWhenNothing() {
@@ -80,7 +79,9 @@ class ModelBranchesTest {
 
     }
 
-    /* ---------- AudioStream ---------- */
+    /**
+     * AudioStream.
+     */
 
     @Test
     void audioJacksonSetterAndBlankRateAndCodecGetter() {
@@ -100,7 +101,9 @@ class ModelBranchesTest {
 
     }
 
-    /* ---------- SubtitleStream ---------- */
+    /**
+     * SubtitleStream.
+     */
 
     @Test
     void subtitleMissingIndexAndForcedFlagAndMetadataSetter() {
@@ -122,7 +125,9 @@ class ModelBranchesTest {
 
     }
 
-    /* ---------- VideoInfo ---------- */
+    /**
+     * VideoInfo.
+     */
 
     @Test
     void formatDurationGarbageAndStreamWithoutType() {

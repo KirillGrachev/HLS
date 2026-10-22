@@ -65,7 +65,9 @@ public class SubtitleStream implements MediaTrack {
         metadata.put(name, value);
     }
 
-    /* ---------- Заполнение из ffprobe ---------- */
+    /**
+     * Заполнение из ffprobe.
+     */
 
     public void populateFromProbeData(@NotNull Map<String, Object> probeData) {
 
@@ -88,14 +90,18 @@ public class SubtitleStream implements MediaTrack {
 
     }
 
-    /* ---------- Поведение ---------- */
+    /**
+     * Поведение.
+     */
 
     /** Можно ли конвертировать дорожку в WebVTT (т.е. пустить в HLS). */
     public boolean isTextBased() {
         return codecName != null && WEBVTT_CONVERTIBLE_CODECS.contains(codecName.toLowerCase());
     }
 
-    /* ---------- Определение языка ---------- */
+    /**
+     * Определение языка.
+     */
 
     /** Тот же порядок, что у аудио: {@code tags.language} → код в скобках тайтла → "und". */
     private @NotNull String resolveLanguage(@NotNull ProbeData probe) {
@@ -108,14 +114,13 @@ public class SubtitleStream implements MediaTrack {
     }
 
     private @NotNull String parseLanguageFromTitle(String title) {
-
         Matcher matcher = LANGUAGE_IN_TITLE.matcher(title);
-
         return matcher.find() ? matcher.group(1).toLowerCase() : "und";
-
     }
 
-    /* ---------- MediaTrack ---------- */
+    /**
+     * MediaTrack.
+     */
 
     @Override
     public int getStreamIndex() {

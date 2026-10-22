@@ -43,7 +43,9 @@ public class VideoStream {
     /** Всё, что ffprobe сказал о потоке, но что мы не разобрали в поля. */
     private Map<String, Object> metadata = new HashMap<>();
 
-    /* ---------- Jackson ---------- */
+    /**
+     * Jackson.
+     */
 
     @JsonProperty("r_frame_rate")
     public void parseFrameRate(String rawFrameRate) {
@@ -60,7 +62,9 @@ public class VideoStream {
         metadata.put(name, value);
     }
 
-    /* ---------- Заполнение из ffprobe ---------- */
+    /**
+     * Заполнение из ffprobe.
+     */
 
     /**
      * Заполняет поток из сырой map ffprobe; не-видео map игнорируется
@@ -95,7 +99,9 @@ public class VideoStream {
 
     }
 
-    /* ---------- Производные значения ---------- */
+    /**
+     * Производные значения.
+     */
 
     /** Частота кадров: дробь "24000/1001" превращается в 23.976. */
     public Optional<Double> getCalculatedFrameRate() {
@@ -153,7 +159,9 @@ public class VideoStream {
 
     }
 
-    /* ---------- Внутренний парсинг ---------- */
+    /**
+     * Внутренний парсинг.
+     */
 
     /** Разбирает дробь вида "a/b" или "a:b" ("24000/1001", "16:9" сюда не передаётся). */
     private static Optional<Double> parseFraction(String raw) {

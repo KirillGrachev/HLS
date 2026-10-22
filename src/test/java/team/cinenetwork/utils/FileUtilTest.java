@@ -68,10 +68,8 @@ class FileUtilTest {
 
     @Test
     void missingDirectoryIsNotAnErrorForCleanup() throws IOException {
-
         // чистка несуществующей директории — warn, а не падение
         FileUtil.deleteFilesByPattern(tempDir.resolve("nope"), "_*");
-
     }
 
     @Test
@@ -80,6 +78,5 @@ class FileUtilTest {
         ProcessingException e = assertThrows(ProcessingException.class,
                 () -> FileUtil.prepareOutputDirectory(null, true));
         assertTrue(e.getCode() == ErrorCode.NULL_PATH_PROVIDED);
-
     }
 }

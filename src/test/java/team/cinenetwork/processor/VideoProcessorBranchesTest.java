@@ -137,7 +137,9 @@ class VideoProcessorBranchesTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions options(String probeJson) throws IOException {
 

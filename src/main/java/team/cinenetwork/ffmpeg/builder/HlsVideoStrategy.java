@@ -50,7 +50,9 @@ public class HlsVideoStrategy extends AbstractFFmpegStrategy {
 
     }
 
-    /* ---------- Блок видео-кодирования ---------- */
+    /**
+     * Блок видео-кодирования.
+     */
 
     private @NotNull List<String> videoEncodeArgs(@NotNull VideoStream video) {
 
@@ -88,7 +90,9 @@ public class HlsVideoStrategy extends AbstractFFmpegStrategy {
         return "scale=" + resolution[0] + ":" + resolution[1] + ",format=yuv420p";
     }
 
-    /* ---------- Выходные пути ---------- */
+    /**
+     * Выходные пути.
+     */
 
     private @NotNull Path variantDirectory() {
         // Папка именуется по имени варианта (1080p, 720p, ...) —

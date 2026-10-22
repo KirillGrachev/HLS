@@ -32,9 +32,7 @@ class CodecTagsTest {
 
     @Test
     void malformedLevelYieldsNoTag() {
-
         assertTrue(CodecTags.videoCodecTag("libx264", "high@x").isEmpty());
-
     }
 
     @Test

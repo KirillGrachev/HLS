@@ -52,7 +52,9 @@ public class AudioStream implements MediaTrack {
     /** Прочие поля ffprobe по этой дорожке. */
     private Map<String, Object> metadata = new HashMap<>();
 
-    /* ---------- Jackson ---------- */
+    /**
+     * Jackson.
+     */
 
     @JsonAnySetter
     public void storeMetadataProperty(String name, Object value) {
@@ -64,7 +66,9 @@ public class AudioStream implements MediaTrack {
         this.samplingRateHz = parseRateSafely(rawRate);
     }
 
-    /* ---------- Заполнение из ffprobe ---------- */
+    /**
+     * Заполнение из ffprobe.
+     */
 
     public void populateFromProbeData(@NotNull Map<String, Object> probeData) {
 
@@ -84,7 +88,9 @@ public class AudioStream implements MediaTrack {
 
     }
 
-    /* ---------- Определение языка ---------- */
+    /**
+     * Определение языка.
+     */
 
     /**
      * Порядок определения языка (от надёжного к менее надёжному):
@@ -104,11 +110,8 @@ public class AudioStream implements MediaTrack {
     }
 
     private @NotNull String parseLanguageFromTitle(String title) {
-
         Matcher matcher = LANGUAGE_IN_TITLE.matcher(title);
-
         return matcher.find() ? matcher.group(1).toLowerCase() : "und";
-
     }
 
     /** Парсит "48000"/"48000 Hz"; мусор не фатален: без rates просто не передадим -ar. */
@@ -120,9 +123,7 @@ public class AudioStream implements MediaTrack {
         }
 
         try {
-
             return Integer.parseInt(cleaned);
-
         } catch (NumberFormatException e) {
             log.warn("Invalid sampling rate format: '{}' (raw: '{}')", cleaned, rawRate);
             return 0;
@@ -130,7 +131,9 @@ public class AudioStream implements MediaTrack {
 
     }
 
-    /* ---------- MediaTrack ---------- */
+    /**
+     * MediaTrack.
+     */
 
     @Override
     public int getStreamIndex() {

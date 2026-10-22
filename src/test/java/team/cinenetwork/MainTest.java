@@ -21,11 +21,9 @@ class MainTest {
 
     @Test
     void helpAndVersionDoNotExit() {
-
         // ни один вызов не должен бросить ExitCalled
         Main.main(new String[]{"--help"});
         Main.main(new String[]{"--version"});
-
     }
 
     @Test
@@ -54,7 +52,9 @@ class MainTest {
 
     }
 
-    /* ---------- Перехват System.exit ---------- */
+    /**
+     * Перехват System.exit.
+     */
 
     private void assertExitCode(int expected, Runnable action) {
 
@@ -62,13 +62,10 @@ class MainTest {
         System.setSecurityManager(new ExitTrap());
 
         try {
-
             action.run();
             fail("Ожидали System.exit(" + expected + "), но процесс не попытался завершиться");
-
         } catch (ExitTrap.ExitCalled exit) {
             assertEquals(expected, exit.status());
-
         } finally {
             System.setSecurityManager(previous);
         }

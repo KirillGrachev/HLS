@@ -94,7 +94,9 @@ class StreamsTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private VideoStream video(int width, int height, String rate, String bitrate) {
 

@@ -11,7 +11,9 @@ package team.cinenetwork.exception;
  */
 public enum ErrorCode {
 
-    /* --- Валидация входных данных --- */
+    /**
+     * Валидация входных данных.
+     */
     NO_VIDEO_STREAM("Source file contains no video streams", ErrorCategory.VALIDATION),
     AUDIO_ONLY("Input contains only audio streams", ErrorCategory.PROCESSING),
     INVALID_ASPECT_RATIO("Invalid aspect ratio format or value", ErrorCategory.VALIDATION),
@@ -21,14 +23,18 @@ public enum ErrorCode {
     INVALID_DIRECTORY_PATH("Specified path is not a valid directory", ErrorCategory.VALIDATION),
     DIRECTORY_EXISTS("Output directory already exists and overwrite is disabled", ErrorCategory.VALIDATION),
 
-    /* --- Обработка --- */
+    /**
+     * Обработка.
+     */
     FRAME_RATE_NOT_FOUND("Frame rate could not be detected", ErrorCategory.PROCESSING),
     AUDIO_STREAM_NOT_FOUND("Required audio stream not found", ErrorCategory.PROCESSING),
     VIDEO_PROCESSING_FAILED("Video processing failed", ErrorCategory.PROCESSING),
     COMMAND_EXECUTION_FAILED("External command failed with non-zero exit code", ErrorCategory.PROCESSING),
     INVALID_COMMAND_ARGUMENTS("Command or arguments are invalid", ErrorCategory.VALIDATION),
 
-    /* --- Система --- */
+    /**
+     * Система.
+     */
     EXECUTION_INTERRUPTED("Command execution was interrupted", ErrorCategory.SYSTEM);
 
     /** Сообщение по умолчанию (английский: уходит в логи и метрики сервиса). */

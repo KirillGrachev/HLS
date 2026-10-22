@@ -84,7 +84,9 @@ class MasterPlaylistBuilderTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions baseOptions() {
 

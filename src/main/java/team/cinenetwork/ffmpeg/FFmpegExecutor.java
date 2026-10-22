@@ -30,10 +30,8 @@ public class FFmpegExecutor {
     public FFmpegExecutor(@NotNull AppOptions options,
                           @NotNull VideoInfo videoInfo,
                           @NotNull EncodingProfile profile) {
-
         this.options = options;
         this.coordinator = new FFmpegCommandCoordinator(options, videoInfo, profile);
-
     }
 
     /**

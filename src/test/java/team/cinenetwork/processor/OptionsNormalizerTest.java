@@ -225,7 +225,9 @@ class OptionsNormalizerTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private VideoInfo videoInfo720p() {
         return videoInfo(1280, 720, "5000000");

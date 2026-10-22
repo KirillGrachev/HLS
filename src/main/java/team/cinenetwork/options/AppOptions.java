@@ -40,7 +40,9 @@ import java.util.List;
                 + "video ladder, multiple audio tracks and WebVTT subtitles in one master playlist.")
 public class AppOptions {
 
-    /* ==================== Ввод / вывод ==================== */
+    /**
+     * Ввод / вывод.
+     */
 
     /** Позиционная форма входного файла: {@code HLS source.mp4}. */
     @Parameters(index = "0", arity = "0..1",
@@ -66,7 +68,9 @@ public class AppOptions {
             description = "Base name for output file(s) without extension")
     private String outputFilename;
 
-    /* ==================== HLS ==================== */
+    /**
+     * HLS.
+     */
 
     @Option(names = "--hls-disable", negatable = true,
             description = "Disable HLS segments generation")
@@ -91,7 +95,9 @@ public class AppOptions {
             description = "Reserved: files are always organized in folders")
     private boolean hlsFolderStructure = true;
 
-    /* ==================== Видео-лестница ==================== */
+    /**
+     * Видео-лестница.
+     */
 
     @Option(names = "--video-widths", split = ",", description = "Video widths (pixels)")
     private List<Integer> videoWidths = new ArrayList<>(List.of(1920, 1280, 854, 640, 428));
@@ -120,7 +126,9 @@ public class AppOptions {
     @Option(names = "--video-presets", split = ",", description = "Encoding presets")
     private List<String> videoPresets = new ArrayList<>(List.of("slow", "slow", "slow", "slow", "slow"));
 
-    /* ==================== Аудио ==================== */
+    /**
+     * Аудио.
+     */
 
     @Option(names = "--audio-disable", negatable = true, description = "Disable audio completely")
     private boolean audioDisable;
@@ -161,7 +169,9 @@ public class AppOptions {
                     + "(default: the first track)")
     private String audioDefaultLanguage;
 
-    /* ==================== Субтитры (новая возможность) ==================== */
+    /**
+     * Субтитры (новая возможность).
+     */
 
     @Option(names = "--subs-enabled", negatable = true, arity = "0..1", fallbackValue = "true",
             description = "Extract subtitle tracks to WebVTT and add them to HLS, so viewers "
@@ -179,7 +189,9 @@ public class AppOptions {
                     + "(default: none, player chooses automatically)")
     private String subsDefaultLanguage;
 
-    /* ==================== Постер ==================== */
+    /**
+     * Постер.
+     */
 
     @Option(names = "--poster-enabled", negatable = true, arity = "0..1", fallbackValue = "true",
             description = "Generate poster (preview.jpg)")
@@ -198,13 +210,17 @@ public class AppOptions {
     @Option(names = "--poster-max-width", description = "Max poster width")
     private int posterMaxWidth = 1920;
 
-    /* ==================== Плейлист ==================== */
+    /**
+     * Плейлист.
+     */
 
     @Option(names = "--playlist-disabled", negatable = true,
             description = "Disable master playlist creation")
     private boolean playlistDisable;
 
-    /* ==================== Внешние утилиты ==================== */
+    /**
+     * Внешние утилиты.
+     */
 
     @Option(names = "--ffmpeg", description = "FFmpeg executable")
     private String ffmpeg = "ffmpeg";
@@ -221,7 +237,9 @@ public class AppOptions {
         mpegts
     }
 
-    /* ==================== Производные геттеры ==================== */
+    /**
+     * Производные геттеры.
+     */
 
     /**
      * Эффективный входной файл: флаг-форма приоритетнее позиционной.

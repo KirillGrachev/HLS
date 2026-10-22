@@ -56,7 +56,9 @@ class SubtitleRenditionsTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions options() {
 

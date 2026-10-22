@@ -34,10 +34,8 @@ class CommandExecutorEdgeCasesTest {
 
     @Test
     void streamingModeLogsLiveLines() throws IOException {
-
         // построчный режим: лямбда логирования реально выполняется на каждой строке
         CommandExecutor.executeAndStreamOutput("sh", List.of("-c", "echo one; echo two; exit 0"));
-
     }
 
     @Test
@@ -68,7 +66,6 @@ class CommandExecutorEdgeCasesTest {
             ProcessingException e = assertThrows(ProcessingException.class,
                     () -> CommandExecutor.executeAndStreamOutput("sh", List.of("-c", "true")));
             assertEquals(ErrorCode.EXECUTION_INTERRUPTED, e.getCode());
-
         } finally {
             // снимаем флаг, чтобы не задеть остальные тесты
             Thread.interrupted();

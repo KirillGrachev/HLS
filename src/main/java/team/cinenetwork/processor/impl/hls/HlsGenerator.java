@@ -29,13 +29,11 @@ public class HlsGenerator implements ArtifactGenerator {
 
     @Override
     public boolean isEnabled() {
-
         // audio-only не отключает этап, а меняет его наполнение: координатор вместо
         // видео-лестницы собирает команду AudioOnlyStrategy. Раньше режим исключался
         // здесь, и --audio-only молча не генерировал ничего (exit 0, пустой вывод).
         return !options.isHlsDisable()
                 && (options.isAudioOnly() || videoInfo.getVideoStream() != null);
-
     }
 
     @Override

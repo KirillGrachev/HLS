@@ -40,7 +40,9 @@ class FFmpegExecutorTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private VideoInfo info() {
 

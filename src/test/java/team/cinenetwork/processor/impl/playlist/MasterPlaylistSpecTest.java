@@ -181,9 +181,7 @@ class MasterPlaylistSpecTest {
     }
 
     private static String build(AppOptions options, VideoInfo videoInfo) {
-
         return new MasterPlaylistBuilder(options, videoInfo, singleVariantProfile()).build().orElseThrow();
-
     }
 
     private static AppOptions baseOptions() {
@@ -231,11 +229,8 @@ class MasterPlaylistSpecTest {
     }
 
     private static AudioStream audio(int index, String language) {
-
         return audioTitled(index, language, "Track " + index);
-
     }
-
     private static AudioStream audioTitled(int index, String language, String title) {
 
         AudioStream stream = new AudioStream();
@@ -267,23 +262,16 @@ class MasterPlaylistSpecTest {
         return new EncodingProfile(
                 List.of(new EncodingProfile.Variant(1920, 8000, "libx264", "high@5.2", "slow", "1080p")),
                 1920);
-
     }
-
     private static List<String> mediaLines(String master, String type) {
-
         return master.lines()
                 .filter(line -> line.startsWith("#EXT-X-MEDIA:TYPE=" + type))
                 .toList();
-
     }
 
     private static long countDefaultYes(List<String> lines) {
-
         return lines.stream().filter(line -> line.contains(",DEFAULT=YES")).count();
-
     }
-
     /**
      * Достаёт значение атрибута без окружающих кавычек.
      *
@@ -331,11 +319,7 @@ class MasterPlaylistSpecTest {
 
     /** Кавычки должны быть сбалансированы: чётное число, без экранирования удвоением. */
     private static int countUnbalancedQuotes(String line) {
-
         long quotes = line.chars().filter(c -> c == '"').count();
-
         return (int) (quotes % 2);
-
     }
-
 }

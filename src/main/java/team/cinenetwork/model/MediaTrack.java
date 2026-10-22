@@ -26,10 +26,7 @@ public interface MediaTrack {
 
     /** Имя для плейлистов и логов: тайтл, если есть, иначе код языка. */
     default @NotNull String getDisplayName() {
-
         String title = getTitle();
-
         return title != null && !title.isBlank() ? title : getLanguage();
-
     }
 }

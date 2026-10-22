@@ -40,10 +40,8 @@ public final class EncodingProfile {
 
     public EncodingProfile(@NotNull List<Variant> variants,
                            int posterWidth) {
-
         this.variants = List.copyOf(variants);
         this.posterWidth = posterWidth;
-
     }
 
     /** Ступени лестницы (неизменяемый список). */

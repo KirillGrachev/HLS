@@ -96,13 +96,10 @@ class FileUtilOutputDirectoryTest {
     @Test
     void deleteFilesByPatternWarnsInsteadOfFailingOnMissingDirectory(@TempDir Path temp)
             throws IOException {
-
         // Несуществующая директория — нормальный сценарий чистки временных файлов,
         // поэтому она не должна ронять пайплайн.
         FileUtil.deleteFilesByPattern(temp.resolve("absent"), "_*");
-
         assertTrue(Files.notExists(temp.resolve("absent")));
-
     }
 
     @Test

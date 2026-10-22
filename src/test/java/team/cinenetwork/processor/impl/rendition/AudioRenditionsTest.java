@@ -57,7 +57,9 @@ class AudioRenditionsTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions options() {
 

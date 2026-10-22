@@ -48,7 +48,9 @@ public class ProcessingException extends RuntimeException {
                 : Collections.unmodifiableMap(context);
     }
 
-    /* ---------- Фабрики: от частых к полным ---------- */
+    /**
+     * Фабрики: от частых к полным.
+     */
 
     public static @NotNull ProcessingException of(@NotNull ErrorCode code) {
         return new ProcessingException(code, code.getDefaultMessage(), null, null);
@@ -82,7 +84,9 @@ public class ProcessingException extends RuntimeException {
         return new ProcessingException(code, message, context, cause);
     }
 
-    /* ---------- Доступы ---------- */
+    /**
+     * Доступы.
+     */
 
     /** Код ошибки. */
     public @NotNull ErrorCode getCode() {
@@ -107,11 +111,8 @@ public class ProcessingException extends RuntimeException {
      * @return значение или {@code null}, если ключа нет или тип не совпал
      */
     public @Nullable <T> T getContextValue(@NotNull String key, @NotNull Class<T> type) {
-
         Object value = context.get(key);
-
         return type.isInstance(value) ? type.cast(value) : null;
-
     }
 
     @Override

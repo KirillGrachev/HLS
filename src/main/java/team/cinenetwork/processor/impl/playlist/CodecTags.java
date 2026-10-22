@@ -47,11 +47,8 @@ public final class CodecTags {
         }
 
         try {
-
             int levelByte = (int) Math.round(Double.parseDouble(parts[1]) * 10);
-
             return Optional.of(String.format("avc1.%02x00%02x", profileByte, levelByte));
-
         } catch (NumberFormatException e) {
             return Optional.empty();
         }
@@ -75,9 +72,7 @@ public final class CodecTags {
             case "aac_low" -> Optional.of("mp4a.40.2");
             case "aac_he" -> Optional.of("mp4a.40.5");
             case "aac_he_v2" -> Optional.of("mp4a.40.29");
-
             default -> Optional.empty();
         };
-
     }
 }

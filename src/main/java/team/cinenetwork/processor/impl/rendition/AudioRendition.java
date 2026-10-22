@@ -15,7 +15,6 @@ import java.nio.file.Path;
 public record AudioRendition(@NotNull AudioStream stream,
                              @NotNull String folderName,
                              @NotNull Path directory) {
-
     /** Относительный URI для мастер-плейлиста: {@code audio/jpn/playlist.m3u8}. */
     public @NotNull String playlistUri() {
         return "audio/" + folderName + "/playlist.m3u8";

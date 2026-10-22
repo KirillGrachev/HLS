@@ -123,11 +123,8 @@ class AbstractFFmpegStrategyTest {
 
     @Test
     void gopIntervalUsesFpsAndHlsTime() {
-
         TestStrategy s = strategy(video("24000/1001"));  // ≈23.976 fps * 6 sec ≈ 144
-
         assertEquals(144, s.gop());
-
     }
 
     @Test
@@ -205,6 +202,5 @@ class AbstractFFmpegStrategyTest {
 
         ProcessingException e = assertThrows(ProcessingException.class, () -> s.resolution(1280));
         assertEquals(ErrorCode.NO_VIDEO_STREAM, e.getCode());
-
     }
 }

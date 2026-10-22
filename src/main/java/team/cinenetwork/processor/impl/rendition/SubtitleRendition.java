@@ -19,7 +19,6 @@ public record SubtitleRendition(@NotNull SubtitleStream stream,
                                 @NotNull Path directory,
                                 @NotNull Path vttFile,
                                 @NotNull Path playlistFile) {
-
     /** Относительный URI для мастер-плейлиста: {@code subtitles/rus/playlist.m3u8}. */
     public @NotNull String playlistUri() {
         return "subtitles/" + folderName + "/playlist.m3u8";

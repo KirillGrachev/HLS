@@ -70,7 +70,6 @@ public class CommandExecutor {
 
         } catch (InterruptedException e) {
             throw interrupted(e);
-
         } finally {
             process.destroy();
         }
@@ -103,14 +102,15 @@ public class CommandExecutor {
 
         } catch (InterruptedException e) {
             throw interrupted(e);
-
         } finally {
             process.destroy();
         }
 
     }
 
-    /* ---------- Внутренние шаги ---------- */
+    /**
+     * Внутренние шаги.
+     */
 
     /** Проверяет вход и собирает полную команду (исполняемый файл + аргументы). */
     private @NotNull List<String> prepare(String command, List<String> arguments) {
@@ -119,12 +119,10 @@ public class CommandExecutor {
             throw ProcessingException.of(ErrorCode.COMMAND_EXECUTION_FAILED,
                     "Command must not be null or empty");
         }
-
         if (arguments == null) {
             throw ProcessingException.of(ErrorCode.INVALID_COMMAND_ARGUMENTS,
                     "Arguments list must not be null");
         }
-
         List<String> fullCommand = new ArrayList<>(arguments.size() + 1);
         fullCommand.add(command);
         fullCommand.addAll(arguments);
@@ -139,9 +137,7 @@ public class CommandExecutor {
         return new ProcessBuilder(fullCommand)
                 .redirectErrorStream(true)
                 .start();
-
     }
-
     /**
      * Читает вывод процесса построчно до EOF, передавая каждую строку потребителю
      * (лог или аккумулятор); параллельно держит хвост последних строк для диагностики.
@@ -167,11 +163,8 @@ public class CommandExecutor {
                     throw new InterruptedException("Interrupted while reading process output");
                 }
             }
-
         }
-
         return tail;
-
     }
 
     /** Держит в очереди не больше {@link #ERROR_TAIL_LINES} последних строк. */

@@ -74,9 +74,7 @@ class FFmpegCommandCoordinatorEdgeCasesTest {
 
     @Test
     void posterWithoutVideoStreamIsEmpty() {
-
         assertTrue(coordinator(options(), videoOnlyInfoWithoutVideo()).buildPosterCommands().isEmpty());
-
     }
 
     @Test
@@ -84,12 +82,11 @@ class FFmpegCommandCoordinatorEdgeCasesTest {
 
         AppOptions options = options();
         options.setAudioDisable(true);
-
         assertTrue(coordinator(options, fullInfo()).buildAudioRenditionCommands().isEmpty());
-
     }
-
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions options() {
 
@@ -110,9 +107,7 @@ class FFmpegCommandCoordinatorEdgeCasesTest {
         return new EncodingProfile(List.of(
                 new EncodingProfile.Variant(1920, 8000, "libx264", "high@5.2", "slow", "1080p")
         ), 1920);
-
     }
-
     private VideoInfo fullInfo() {
 
         VideoInfo info = videoOnlyInfo();

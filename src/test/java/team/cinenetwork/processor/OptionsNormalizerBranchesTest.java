@@ -202,7 +202,9 @@ class OptionsNormalizerBranchesTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions base() {
 

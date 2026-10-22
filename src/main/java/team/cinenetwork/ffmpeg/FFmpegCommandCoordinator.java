@@ -36,7 +36,9 @@ public class FFmpegCommandCoordinator {
     private final VideoInfo videoInfo;
     private final EncodingProfile profile;
 
-    /* ---------- Видео: лестница вариантов ---------- */
+    /**
+     * Видео: лестница вариантов.
+     */
 
     /** Команды видео-лестницы; в audio-only режиме — одна команда аудио-плейлиста. */
     public @NotNull List<List<String>> buildTranscodeCommands() {
@@ -56,7 +58,9 @@ public class FFmpegCommandCoordinator {
 
     }
 
-    /* ---------- Аудио: рендишены по дорожкам ---------- */
+    /**
+     * Аудио: рендишены по дорожкам.
+     */
 
     /** По команде на каждую озвучку; пусто, если аудио отключено флагами. */
     public @NotNull List<List<String>> buildAudioRenditionCommands() {
@@ -72,7 +76,9 @@ public class FFmpegCommandCoordinator {
 
     }
 
-    /* ---------- Субтитры: WebVTT по дорожкам ---------- */
+    /**
+     * Субтитры: WebVTT по дорожкам.
+     */
 
     /** По команде конвертации на каждую текстовую дорожку субтитров. */
     public @NotNull List<List<String>> buildSubtitleCommands() {
@@ -88,7 +94,9 @@ public class FFmpegCommandCoordinator {
 
     }
 
-    /* ---------- Постер ---------- */
+    /**
+     * Постер.
+     */
 
     /** Одна команда постера; пусто в audio-only режиме или без видеопотока. */
     public @NotNull List<List<String>> buildPosterCommands() {
@@ -101,7 +109,9 @@ public class FFmpegCommandCoordinator {
 
     }
 
-    /* ---------- Single-file (MP4 remux) ---------- */
+    /**
+     * Single-file (MP4 remux).
+     */
 
     /** Команды MP4-remux: одна на дорожку в режиме {@code --all-audio-tracks}, иначе одна на выбранный трек. */
     public @NotNull List<List<String>> buildSingleFileCommands() {

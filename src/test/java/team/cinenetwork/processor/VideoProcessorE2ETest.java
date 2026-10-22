@@ -108,7 +108,9 @@ class VideoProcessorE2ETest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions hlsOptions(Path bin, Path out) {
 

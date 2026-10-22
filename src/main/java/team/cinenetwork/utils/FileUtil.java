@@ -78,7 +78,9 @@ public class FileUtil {
 
     }
 
-    /* ---------- Внутренние шаги ---------- */
+    /**
+     * Внутренние шаги.
+     */
 
     private void handleExistingDirectory(Path path, boolean overwrite) {
 
@@ -94,33 +96,27 @@ public class FileUtil {
     }
 
     private void createNewDirectory(Path path) throws IOException {
-
         log.debug("Creating new directory structure: {}", path);
         Files.createDirectories(path);
-
     }
 
     private void deleteMatchingFiles(@NotNull DirectoryStream<Path> directoryStream)
             throws IOException {
 
         for (Path filePath : directoryStream) {
-
             if (Files.isRegularFile(filePath)) {
                 deleteSingleFile(filePath);
             }
-
         }
-
     }
 
     private void deleteSingleFile(Path filePath) throws IOException {
-
         log.debug("Deleting temporary file: {}", filePath);
         Files.deleteIfExists(filePath);
-
     }
-
-    /* ---------- Валидации ---------- */
+    /**
+     * Валидации.
+     */
 
     private void validatePathNotNull(Path path) {
         if (path == null) {

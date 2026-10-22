@@ -85,7 +85,9 @@ public class OptionsNormalizer {
 
     }
 
-    /* ---------- Шаг 1: убрать некорректные ступени (width <= 0) ---------- */
+    /**
+     * Шаг 1: убрать некорректные ступени (width <= 0).
+     */
 
     private void dropInvalidWidths(List<Integer> widths,
                                    List<Integer> bitrates,
@@ -106,7 +108,9 @@ public class OptionsNormalizer {
 
     }
 
-    /* ---------- Шаг 2: выровнять длины списков ---------- */
+    /**
+     * Шаг 2: выровнять длины списков.
+     */
 
     /**
      * Все списки становятся длиной с {@code widths}: недостающие значения заполняются
@@ -179,7 +183,9 @@ public class OptionsNormalizer {
 
     }
 
-    /* ---------- Шаг 3: глобальный множитель битрейта ---------- */
+    /**
+     * Шаг 3: глобальный множитель битрейта.
+     */
 
     private void applyBitrateScalingFactor(AppOptions options, List<Integer> bitrates) {
 
@@ -202,7 +208,9 @@ public class OptionsNormalizer {
 
     }
 
-    /* ---------- Шаг 4: срезать ступени выше источника ---------- */
+    /**
+     * Шаг 4: срезать ступени выше источника.
+     */
 
     private void dropRungsExceedingSource(VideoInfo videoInfo,
                                           List<Integer> widths,
@@ -270,7 +278,9 @@ public class OptionsNormalizer {
         }
     }
 
-    /* ---------- Шаг 5: собрать варианты ---------- */
+    /**
+     * Шаг 5: собрать варианты.
+     */
 
     /**
      * Итоговый битрейт ступени: {@code min(битрейт источника, битрейт лестницы) * quality-фактор}.
@@ -325,7 +335,9 @@ public class OptionsNormalizer {
 
     }
 
-    /* ---------- Шаг 6: проверить имена вариантов ---------- */
+    /**
+     * Шаг 6: проверить имена вариантов.
+     */
 
     /**
      * Проверяет имена ступеней перед сборкой плана.
@@ -360,7 +372,9 @@ public class OptionsNormalizer {
 
     }
 
-    /* ---------- Вспомогательные ---------- */
+    /**
+     * Вспомогательные.
+     */
 
     private int valueOrDefault(Integer explicitValue, IntSupplier defaultValue) {
         return explicitValue != null ? explicitValue : defaultValue.getAsInt();

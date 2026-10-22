@@ -80,16 +80,16 @@ public class VideoProcessor {
 
         } catch (ProcessingException e) {
             throw e;
-
         } catch (Exception e) {
             throw ProcessingException.of(ErrorCode.VIDEO_PROCESSING_FAILED,
                     "Video processing failed", e);
-
         }
 
     }
 
-    /* ---------- Шаги пайплайна ---------- */
+    /**
+     * Шаги пайплайна.
+     */
 
     /** Создаёт или проверяет выходную директорию с учётом {@code --output-overwrite}. */
     private void prepareOutputDirectory() throws IOException {

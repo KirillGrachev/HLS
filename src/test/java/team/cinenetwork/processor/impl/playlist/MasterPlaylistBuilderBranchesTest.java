@@ -116,11 +116,8 @@ class MasterPlaylistBuilderBranchesTest {
 
     @Test
     void quotesInVariantNamesAreEscaped() {
-
         String master = new MasterPlaylistBuilder(options(), info(), profile("1080\"p")).build().orElseThrow();
-
         assertTrue(master.contains("NAME=\"1080'p\""));
-
     }
 
     @Test
@@ -186,7 +183,9 @@ class MasterPlaylistBuilderBranchesTest {
 
     }
 
-    /* ---------- Фикстуры ---------- */
+    /**
+     * Фикстуры.
+     */
 
     private AppOptions options() {
 
@@ -204,9 +203,7 @@ class MasterPlaylistBuilderBranchesTest {
         return new EncodingProfile(List.of(
                 new EncodingProfile.Variant(1920, 8000, "libx264", "high@5.2", "slow", name)
         ), 1920);
-
     }
-
     private VideoInfo info() {
 
         VideoInfo info = new VideoInfo();
@@ -250,8 +247,6 @@ class MasterPlaylistBuilderBranchesTest {
     }
 
     private String lineContaining(String master, String needle) {
-
         return master.lines().filter(l -> l.contains(needle)).findFirst().orElseThrow();
-
     }
 }

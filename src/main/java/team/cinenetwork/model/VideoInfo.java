@@ -46,7 +46,9 @@ public class VideoInfo {
     /** Длительность контейнера, секунды. */
     private double formatDuration;
 
-    /* ---------- Jackson ---------- */
+    /**
+     * Jackson.
+     */
 
     @JsonProperty("format")
     public void setFormatDetails(Map<String, Object> formatDetails) {
@@ -56,10 +58,8 @@ public class VideoInfo {
         if (formatDetails != null && formatDetails.containsKey("duration")) {
 
             try {
-
                 this.formatDuration = Double.parseDouble(formatDetails
                         .get("duration").toString());
-
             } catch (NumberFormatException e) {
                 log.warn("Failed to parse format duration: {}", formatDetails.get("duration"));
             }
@@ -74,7 +74,9 @@ public class VideoInfo {
         streams.forEach(this::registerStream);
     }
 
-    /* ---------- Распределение потоков по типам ---------- */
+    /**
+     * Распределение потоков по типам.
+     */
 
     /** Раскладывает поток в нужную коллекцию; неизвестные типы (data, attachment) игнорирует. */
     private void registerStream(@NotNull Map<String, Object> streamData) {
@@ -88,10 +90,8 @@ public class VideoInfo {
             case "video" -> registerVideoStream(streamData);
             case "audio" -> registerAudioStream(streamData);
             case "subtitle" -> registerSubtitleStream(streamData);
-
             default -> log.debug("Ignoring stream of type '{}'", rawType);
         }
-
     }
 
     private void registerVideoStream(Map<String, Object> streamData) {
@@ -100,11 +100,8 @@ public class VideoInfo {
             videoStream = new VideoStream();
             videoStream.populateFromProbeData(streamData);
         }
-
     }
-
     private void registerAudioStream(Map<String, Object> streamData) {
-
         AudioStream audio = new AudioStream();
         audio.populateFromProbeData(streamData);
         audioStreams.add(audio);
@@ -120,10 +117,10 @@ public class VideoInfo {
         SubtitleStream subtitle = new SubtitleStream();
         subtitle.populateFromProbeData(streamData);
         subtitleStreams.add(subtitle);
-
     }
-
-    /* ---------- Селекторы ---------- */
+    /**
+     * Селекторы.
+     */
 
     /**
      * Ищет аудиодорожку по селектору: {@code "index:1"}, {@code "1"} или {@code null}
@@ -153,9 +150,7 @@ public class VideoInfo {
             log.warn("Invalid audio stream selector: '{}'", streamSelector);
             return Optional.empty();
         }
-
     }
-
     /** Длительность воспроизведения: из видеопотока, если известна, иначе из контейнера. */
     public double getDuration() {
 

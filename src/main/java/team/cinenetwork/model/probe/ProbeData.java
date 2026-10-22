@@ -71,9 +71,7 @@ public final class ProbeData {
         }
 
         try {
-
             return OptionalInt.of(Integer.parseInt(rawValue.toString().trim()));
-
         } catch (NumberFormatException e) {
             return OptionalInt.empty();
         }
@@ -94,10 +92,8 @@ public final class ProbeData {
         }
 
         try {
-
             String normalized = rawValue.toString().replace(',', '.').trim();
             return OptionalDouble.of(Double.parseDouble(normalized));
-
         } catch (NumberFormatException e) {
             return OptionalDouble.empty();
         }
@@ -115,9 +111,7 @@ public final class ProbeData {
                 .filter(Map.class::isInstance)
                 .map(map -> ProbeData.of((Map<String, Object>) map))
                 .orElse(EMPTY);
-
     }
-
     /** Является ли поток указанным типом ({@code codec_type == "video"/"audio"/"subtitle"}). */
     public boolean isCodecType(@NotNull String type) {
 
@@ -125,9 +119,7 @@ public final class ProbeData {
                 .map(String::toLowerCase)
                 .map(type::equals)
                 .orElse(false);
-
     }
-
     /** Язык из {@code tags.language}, например "jpn", "rus". */
     public Optional<String> languageTag() {
         return nested("tags").text("language");

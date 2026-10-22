@@ -50,7 +50,9 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
     @Override
     public abstract @NotNull List<String> build();
 
-    /* ---------- Вход ---------- */
+    /**
+     * Вход.
+     */
 
     /** Единая преамбула: перезаписывать без вопросов, не читать stdin, входной файл. */
     protected @NotNull List<String> inputArgs() {
@@ -75,7 +77,9 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
 
     }
 
-    /* ---------- Геометрия и тайминги ---------- */
+    /**
+     * Геометрия и тайминги.
+     */
 
     /** Разрешение ступени лестницы: пропорции источника, чётные стороны. */
     protected int @NotNull [] scaledResolution(int targetWidth) {
@@ -137,7 +141,9 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
 
     }
 
-    /* ---------- Кодеки ---------- */
+    /**
+     * Кодеки.
+     */
 
     /**
      * Профиль из строки вида {@code "high@5.2"}: часть до {@code @}
@@ -158,11 +164,8 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
      * уровень сам, по разрешению и битрейту.
      */
     protected @Nullable String extractLevel(@NotNull String profileLevel) {
-
         String[] parts = profileLevel.split("@");
-
         return parts.length > 1 && !parts[1].isBlank() ? parts[1] : null;
-
     }
 
     /**
@@ -190,7 +193,9 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
 
     }
 
-    /* ---------- HLS-мультиплексор ---------- */
+    /**
+     * HLS-мультиплексор.
+     */
 
     /**
      * Единый HLS-выход: VOD-плейлист фиксированной длины, сегменты в указанную папку.
@@ -216,16 +221,16 @@ public abstract class AbstractFFmpegStrategy implements FFmpegCommandStrategy {
 
     }
 
-    /* ---------- Файловая система ---------- */
+    /**
+     * Файловая система.
+     */
 
     /** Создаёт директорию (с родительскими); ошибку IO заворачивает в наше исключение. */
     protected @NotNull Path ensureDirectory(Path path) {
 
         try {
-
             Files.createDirectories(path);
             return path;
-
         } catch (IOException e) {
             throw ProcessingException.of(ErrorCode.VIDEO_PROCESSING_FAILED,
                     "Cannot create directory: " + path, e);
