@@ -119,10 +119,12 @@ public class CommandExecutor {
             throw ProcessingException.of(ErrorCode.COMMAND_EXECUTION_FAILED,
                     "Command must not be null or empty");
         }
+
         if (arguments == null) {
             throw ProcessingException.of(ErrorCode.INVALID_COMMAND_ARGUMENTS,
                     "Arguments list must not be null");
         }
+
         List<String> fullCommand = new ArrayList<>(arguments.size() + 1);
         fullCommand.add(command);
         fullCommand.addAll(arguments);

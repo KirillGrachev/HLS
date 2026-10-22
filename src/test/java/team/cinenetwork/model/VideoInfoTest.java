@@ -52,6 +52,7 @@ class VideoInfoTest {
         info.setFormatDetails(Map.of("duration", "1429.5"));
         assertEquals(1429.5, info.getDuration(), 0.001);
     }
+
     @Test
     void metadataParserReadsProbeJson() throws IOException {
 

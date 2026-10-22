@@ -61,6 +61,7 @@ public class Main {
             commandLine.usage(System.out);
             System.exit(2);
         }
+
         if (commandLine.isUsageHelpRequested()) {
             commandLine.usage(System.out);
             return null;
@@ -78,11 +79,13 @@ public class Main {
             commandLine.usage(System.out);
             System.exit(2);
         }
+
         if (options.getOutput() == null) {
             log.error("Output directory is not specified: use --output <dir>");
             commandLine.usage(System.out);
             System.exit(2);
         }
+
         return options;
 
     }

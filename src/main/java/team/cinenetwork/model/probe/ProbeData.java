@@ -112,6 +112,7 @@ public final class ProbeData {
                 .map(map -> ProbeData.of((Map<String, Object>) map))
                 .orElse(EMPTY);
     }
+
     /** Является ли поток указанным типом ({@code codec_type == "video"/"audio"/"subtitle"}). */
     public boolean isCodecType(@NotNull String type) {
 
@@ -120,6 +121,7 @@ public final class ProbeData {
                 .map(type::equals)
                 .orElse(false);
     }
+
     /** Язык из {@code tags.language}, например "jpn", "rus". */
     public Optional<String> languageTag() {
         return nested("tags").text("language");

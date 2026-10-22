@@ -101,6 +101,7 @@ public class VideoInfo {
             videoStream.populateFromProbeData(streamData);
         }
     }
+
     private void registerAudioStream(Map<String, Object> streamData) {
         AudioStream audio = new AudioStream();
         audio.populateFromProbeData(streamData);
@@ -151,6 +152,7 @@ public class VideoInfo {
             return Optional.empty();
         }
     }
+
     /** Длительность воспроизведения: из видеопотока, если известна, иначе из контейнера. */
     public double getDuration() {
 

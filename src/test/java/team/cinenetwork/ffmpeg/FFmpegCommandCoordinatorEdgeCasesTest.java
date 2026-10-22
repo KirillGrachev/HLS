@@ -108,6 +108,7 @@ class FFmpegCommandCoordinatorEdgeCasesTest {
                 new EncodingProfile.Variant(1920, 8000, "libx264", "high@5.2", "slow", "1080p")
         ), 1920);
     }
+
     private VideoInfo fullInfo() {
 
         VideoInfo info = videoOnlyInfo();
